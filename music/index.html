@@ -1898,6 +1898,115 @@ const players = {};
 const trackIds = ['acid-rain', 'oxbow-b', 'anvil', 'inertia'];
 
 // ========================================
+// WEB AUDIO API - REAL-TIME ANALYSIS
+// ========================================
+let audioContext = null;
+let analyser = null;
+let audioSource = null;
+let frequencyData = null;
+let animationFrameId = null;
+
+function initAudioAnalyser(audio) {
+    // Create audio context on first interaction (browser requirement)
+    if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        analyser = audioContext.createAnalyser();
+        analyser.fftSize = 256;  // Fast analysis for beat detection
+        analyser.smoothingTimeConstant = 0.3;  // Quick response
+        frequencyData = new Uint8Array(analyser.frequencyBinCount);
+    }
+
+    // Disconnect previous source if exists
+    if (audioSource) {
+        try { audioSource.disconnect(); } catch(e) {}
+    }
+
+    // Connect this audio to the analyser
+    audioSource = audioContext.createMediaElementSource(audio);
+    audioSource.connect(analyser);
+    analyser.connect(audioContext.destination);
+
+    // Start visualization loop
+    startVisualization();
+}
+
+function startVisualization() {
+    if (animationFrameId) cancelAnimationFrame(animationFrameId);
+
+    function analyze() {
+        if (!analyser || !currentlyPlaying) {
+            animationFrameId = null;
+            return;
+        }
+
+        analyser.getByteFrequencyData(frequencyData);
+
+        // Split frequency data into bands
+        const bassEnd = Math.floor(frequencyData.length * 0.1);  // 0-10% = bass
+        const midEnd = Math.floor(frequencyData.length * 0.5);   // 10-50% = mids
+
+        // Calculate average levels for each band
+        let bassLevel = 0;
+        let midLevel = 0;
+        let highLevel = 0;
+
+        for (let i = 0; i < bassEnd; i++) {
+            bassLevel += frequencyData[i];
+        }
+        bassLevel = bassLevel / bassEnd / 255;  // Normalize to 0-1
+
+        for (let i = bassEnd; i < midEnd; i++) {
+            midLevel += frequencyData[i];
+        }
+        midLevel = midLevel / (midEnd - bassEnd) / 255;
+
+        for (let i = midEnd; i < frequencyData.length; i++) {
+            highLevel += frequencyData[i];
+        }
+        highLevel = highLevel / (frequencyData.length - midEnd) / 255;
+
+        // Apply audio-reactive effects
+        applyAudioEffects(bassLevel, midLevel, highLevel);
+
+        animationFrameId = requestAnimationFrame(analyze);
+    }
+
+    analyze();
+}
+
+function stopVisualization() {
+    if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+        animationFrameId = null;
+    }
+    // Reset effects
+    applyAudioEffects(0, 0, 0);
+}
+
+function applyAudioEffects(bass, mid, high) {
+    const operatorEl = document.getElementById('operator-bg');
+    if (!operatorEl || !operatorEl.classList.contains('active')) return;
+
+    // Bass = zoom pulse (scale effect)
+    const zoomAmount = 1 + (bass * 0.15);  // Up to 15% zoom on bass hits
+
+    // Mid = glow intensity
+    const glowIntensity = 0.3 + (mid * 0.7);  // 30-100% glow
+
+    // Apply transform for zoom effect
+    operatorEl.style.transform = `translate(-50%, -50%) scale(${zoomAmount})`;
+
+    // Apply glow via filter or opacity variation
+    operatorEl.style.filter = `brightness(${0.8 + mid * 0.4}) drop-shadow(0 0 ${20 + bass * 80}px rgba(0, 255, 0, ${glowIntensity}))`;
+
+    // If operator-face component exists, send it the audio data
+    const operatorFace = operatorEl.querySelector('operator-face');
+    if (operatorFace && operatorFace.setAudioLevels) {
+        operatorFace.setAudioLevels(bass, mid, high);
+    }
+}
+
+// ========================================
 // LANGUAGE / TRANSLATION SYSTEM
 // ========================================
 let currentLang = 'de';
@@ -2295,6 +2404,15 @@ function onAudioPlay(trackId) {
 
     // Start timed annotations
     annotationController.start(trackId);
+
+    // Initialize audio analyser for beat-reactive visualization
+    const audio = players[trackId];
+    if (audio && !audio._analyserConnected) {
+        initAudioAnalyser(audio);
+        audio._analyserConnected = true;
+    } else {
+        startVisualization();
+    }
 }
 
 function onAudioPause(trackId) {
@@ -2326,6 +2444,7 @@ function onAudioPause(trackId) {
     // Stop Ghost Operator animation and annotations, unlock controls
     operatorBg.stop();
     annotationController.stop();
+    stopVisualization();
     unlockControls();
 
     // Hide overlays
@@ -2352,6 +2471,7 @@ function onAudioEnded(trackId) {
     // Stop Ghost Operator animation and annotations, unlock controls
     operatorBg.stop();
     annotationController.stop();
+    stopVisualization();
     unlockControls();
 
     // Show text and hide overlays
@@ -2659,11 +2779,17 @@ function isMobile() {
 }
 
 function isFullscreen() {
-    return window.innerHeight === screen.height ||
-           document.fullscreenElement ||
-           document.webkitFullscreenElement ||
-           document.mozFullScreenElement ||
-           document.msFullscreenElement;
+    // Check API fullscreen state
+    if (document.fullscreenElement ||
+        document.webkitFullscreenElement ||
+        document.mozFullScreenElement ||
+        document.msFullscreenElement) {
+        return true;
+    }
+    // Check if window size is close to screen size (within 100px tolerance for DPI scaling)
+    const heightMatch = Math.abs(window.innerHeight - screen.height) < 100;
+    const widthMatch = Math.abs(window.innerWidth - screen.width) < 100;
+    return heightMatch && widthMatch;
 }
 
 function checkFullscreen() {
