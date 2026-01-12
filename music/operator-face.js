@@ -291,89 +291,62 @@ class OperatorFace extends HTMLElement {
             }
         };
 
-        // Glitch state - timer based for controlled frequency
+        // Glitch state - quick flash then pause
         const glitchState = {
             lastGlitch: 0,
-            minInterval: 2000,  // Minimum 2 seconds between glitches
-            current: 0,
-            displacement: { x: 0, y: 0 },
-            scaleGlitch: 0,
-            dissolve: 0
+            nextGlitch: 3000 + Math.random() * 5000,  // Random 3-8 seconds between glitches
+            active: false,
+            flashFrames: 0,
+            flashDuration: 0
         };
 
-        // Holographic instability state
-        const holoState = {
-            phase: Math.random() * Math.PI * 2,
-            scanLine: 0
-        };
-
-        // Continuous electric pulse with holographic glitching
+        // Quick flash glitch effect
         const updatePulse = (t) => {
             if (!wireframeMat || !headMesh) return;
 
-            // Constant holographic instability - subtle wavering
-            holoState.phase += 0.05;
-            const holoWaver = Math.sin(holoState.phase) * 0.02 + Math.sin(holoState.phase * 1.7) * 0.015;
-            const holoFlicker = (Math.random() - 0.5) * 0.08;
-
-            // Decay glitch effects
-            if (glitchState.current > 0) {
-                glitchState.current *= 0.88;
-                if (glitchState.current < 0.01) glitchState.current = 0;
+            // Check if it's time for a new glitch
+            if (!glitchState.active && t - glitchState.lastGlitch > glitchState.nextGlitch) {
+                // Start a quick glitch flash
+                glitchState.active = true;
+                glitchState.flashFrames = 0;
+                glitchState.flashDuration = 3 + Math.floor(Math.random() * 5);  // 3-7 frames of glitch
             }
-            glitchState.displacement.x *= 0.85;
-            glitchState.displacement.y *= 0.85;
-            glitchState.scaleGlitch *= 0.9;
-            glitchState.dissolve *= 0.92;
 
-            // Random glitch triggers
-            if (t - glitchState.lastGlitch > glitchState.minInterval) {
-                const glitchChance = Math.random();
-                if (glitchChance > 0.992) {
-                    // Strong holographic disruption
-                    glitchState.current = 0.5 + Math.random() * 0.5;
-                    glitchState.displacement.x = (Math.random() - 0.5) * 0.3;
-                    glitchState.displacement.y = (Math.random() - 0.5) * 0.15;
-                    glitchState.scaleGlitch = (Math.random() - 0.5) * 0.1;
-                    glitchState.dissolve = 0.3 + Math.random() * 0.4;
+            // Base stable state
+            let opacity = pulseState.baseOpacity;
+            let bloom = pulseState.baseBloom;
+            let dispX = 0;
+            let scaleX = 1.8;
+
+            // Apply glitch if active
+            if (glitchState.active) {
+                glitchState.flashFrames++;
+
+                // Quick intense flash
+                opacity = 0.6 + Math.random() * 0.4;  // Bright flash
+                bloom = 0.8 + Math.random() * 0.5;
+                dispX = (Math.random() - 0.5) * 0.2;  // Horizontal displacement
+                scaleX = 1.8 + (Math.random() - 0.5) * 0.08;  // Slight scale wobble
+
+                // End glitch after flash duration
+                if (glitchState.flashFrames >= glitchState.flashDuration) {
+                    glitchState.active = false;
                     glitchState.lastGlitch = t;
-                    glitchState.minInterval = 3000 + Math.random() * 4000;
-                } else if (glitchChance > 0.97) {
-                    // Medium glitch - partial dissolve
-                    glitchState.current = 0.2 + Math.random() * 0.3;
-                    glitchState.displacement.x = (Math.random() - 0.5) * 0.15;
-                    glitchState.dissolve = 0.15 + Math.random() * 0.2;
-                    glitchState.lastGlitch = t;
-                    glitchState.minInterval = 2000 + Math.random() * 3000;
-                } else if (glitchChance > 0.94) {
-                    // Small flicker
-                    glitchState.current = 0.1 + Math.random() * 0.15;
-                    glitchState.lastGlitch = t;
-                    glitchState.minInterval = 1500 + Math.random() * 2000;
+                    glitchState.nextGlitch = 2000 + Math.random() * 6000;  // 2-8 seconds until next
                 }
             }
 
-            // Apply holographic displacement to mesh position
-            const baseX = 0;
-            const baseY = -2;
-            headMesh.position.x = baseX + glitchState.displacement.x + holoWaver * 0.5;
-            headMesh.position.y = baseY + glitchState.displacement.y;
-            occlusionMesh.position.x = headMesh.position.x;
-            occlusionMesh.position.y = headMesh.position.y;
+            // Very subtle base movement (barely noticeable)
+            const subtleWave = Math.sin(t * 0.001) * 0.01;
 
-            // Scale glitch
-            const scaleBase = 1.8;
-            const scaleMod = scaleBase + glitchState.scaleGlitch;
-            headMesh.scale.x = scaleMod + Math.sin(holoState.phase * 3) * 0.005;
-            occlusionMesh.scale.x = headMesh.scale.x;
+            // Apply to mesh
+            headMesh.position.x = dispX;
+            headMesh.scale.x = scaleX;
+            occlusionMesh.position.x = dispX;
+            occlusionMesh.scale.x = scaleX;
 
-            // Base electric hum with holographic instability
-            const wave = Math.sin(t * 0.008) * 0.05 + 0.5;
-
-            // Opacity with dissolve effect
-            const dissolveEffect = glitchState.dissolve > 0 ? -glitchState.dissolve * 0.5 : 0;
-            wireframeMat.opacity = Math.max(0.1, pulseState.baseOpacity + wave * 0.05 + glitchState.current + holoFlicker + dissolveEffect);
-            bloomPass.strength = pulseState.baseBloom + wave * 0.05 + glitchState.current * 1.5 + Math.abs(holoFlicker) * 0.5;
+            wireframeMat.opacity = opacity + subtleWave;
+            bloomPass.strength = bloom;
         };
 
         const animateEyes = (t, dt) => {
