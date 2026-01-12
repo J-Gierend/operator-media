@@ -1401,7 +1401,7 @@
                         <p>
                             Der Einstieg präsentiert eine <strong>mysteriöse, schwebende Melodielinie</strong> — nicht dissonant
                             genug für Horror, aber unsicher genug, um Spannung zu erzeugen. Die Effekte (primär Hall und subtile
-                            Modulationen) tauchen auf und verschwinden wieder, wie <strong>Lichter in einer nebligen Stadtlandschaft</strong>.
+                            Modulationen) tauchen auf und verschwinden wieder.
                         </p>
                         <p style="margin-top: 12px;">
                             Ab 0:45 etabliert sich ein definierter Beat mit <strong>präziser, uhrmacherartiger Rhythmik</strong>.
@@ -2275,6 +2275,16 @@ const operatorBg = {
     start(videoId) {
         this.isAnimating = true;
 
+        // Cancel any pending reveal timeouts from previous track
+        if (this.textRevealTimeout) {
+            clearTimeout(this.textRevealTimeout);
+            this.textRevealTimeout = null;
+        }
+        if (this.unlockTimeout) {
+            clearTimeout(this.unlockTimeout);
+            this.unlockTimeout = null;
+        }
+
         // Lock all user interaction during animation (both html and body for scroll lock)
         document.documentElement.classList.add('animation-locked');
         document.body.classList.add('animation-locked');
@@ -2316,27 +2326,18 @@ const operatorBg = {
     },
 
     revealContent() {
-        console.log('[revealContent] Called, this.content:', this.content);
-        console.log('[revealContent] blackOverlay:', this.blackOverlay, 'hasActive:', this.blackOverlay?.classList.contains('active'));
+        // Capture the video ID NOW - don't use currentlyPlaying later as it may change
+        const videoIdForThisReveal = currentlyPlaying;
+
+        console.log('[revealContent] Called for:', videoIdForThisReveal);
 
         // Hide black overlay
         if (this.blackOverlay) {
             this.blackOverlay.classList.remove('active');
-            console.log('[revealContent] Removed active from blackOverlay');
         }
         document.body.classList.remove('animating');
 
         if (this.content) {
-            const cs = getComputedStyle(this.content);
-            console.log('[revealContent] Content state:', {
-                opacity: cs.opacity,
-                visibility: cs.visibility,
-                display: cs.display,
-                zIndex: cs.zIndex,
-                hasGlitchClass: this.content.classList.contains('content-glitch'),
-                inlineStyle: this.content.style.cssText
-            });
-
             // Clear all animation classes and styles
             this.content.classList.remove('content-glitch');
             this.content.classList.remove('content-reveal');
@@ -2353,20 +2354,30 @@ const operatorBg = {
             console.log('[revealContent] Step 1: Content fading in over 5s');
 
             // Step 2: After content fade completes, fade in the text (5 more seconds)
-            setTimeout(() => {
+            // Store timeout so it can be cancelled if user switches tracks
+            this.textRevealTimeout = setTimeout(() => {
+                // Only proceed if this is still the active track
+                if (currentlyPlaying !== videoIdForThisReveal) {
+                    console.log('[revealContent] Track changed, aborting text reveal for:', videoIdForThisReveal);
+                    return;
+                }
+
                 this.content.style.transition = '';
                 console.log('[revealContent] Step 2: Now fading in track text');
 
-                if (currentlyPlaying) {
-                    const playingCard = document.querySelector(`[data-video-id="${currentlyPlaying}"]`)?.closest('.track-card');
-                    if (playingCard) {
-                        playingCard.classList.remove('text-hidden');
-                        console.log('[revealContent] Removed text-hidden from track card');
-                    }
+                const playingCard = document.querySelector(`[data-video-id="${videoIdForThisReveal}"]`)?.closest('.track-card');
+                if (playingCard) {
+                    playingCard.classList.remove('text-hidden');
+                    console.log('[revealContent] Removed text-hidden from track card');
                 }
 
                 // Mark animation complete after text fade (5s) - then unlock controls
-                setTimeout(() => {
+                this.unlockTimeout = setTimeout(() => {
+                    // Only unlock if this is still the active track
+                    if (currentlyPlaying !== videoIdForThisReveal) {
+                        console.log('[revealContent] Track changed, skipping unlock for:', videoIdForThisReveal);
+                        return;
+                    }
                     this.isAnimating = false;
                     unlockControls();
                     console.log('[revealContent] Complete. Controls unlocked.');
