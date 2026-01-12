@@ -185,44 +185,44 @@ class OperatorFace extends HTMLElement {
         const pulseState = { baseOpacity: 0.35, baseBloom: 0.35 };
         // Two-layer movement: continuous sinusoidal motion for natural idle feel
         // Random phase offsets create organic, non-repeating patterns
-        // Subtle head movement - like someone breathing, staying present
+        // Very subtle head movement - almost still, like slow breathing
         const headMove = {
             phaseX: Math.random() * Math.PI * 2,
             phaseY: Math.random() * Math.PI * 2,
-            speedX: 0.00006,   // Slow wobble
-            speedY: 0.00005,
-            rangeX: 0.06,      // Gentle nod
-            rangeY: 0.09       // Subtle turn
+            speedX: 0.00002,   // Very slow
+            speedY: 0.000015,
+            rangeX: 0.015,     // Barely noticeable nod
+            rangeY: 0.02       // Minimal turn
         };
 
-        // Organic zoom with multiple overlapping waves - range 30-45
+        // Very slow zoom - barely perceptible
         const zoomMove = {
-            phase1: Math.PI / 2,  // Start zoomed out
+            phase1: Math.PI / 2,
             phase2: Math.random() * Math.PI * 2,
             phase3: Math.random() * Math.PI * 2,
-            speed1: 0.00008,      // ~78 second primary cycle
-            speed2: 0.00013,      // ~48 second secondary cycle
-            speed3: 0.00021,      // ~30 second tertiary pulse
-            baseZ: 37.5,          // Center point
-            range1: 5.5,          // Primary range (32-43)
-            range2: 1.5,          // Secondary variation
-            range3: 0.5           // Subtle pulse
+            speed1: 0.00003,      // Very slow primary cycle
+            speed2: 0.00005,
+            speed3: 0.00008,
+            baseZ: 37.5,
+            range1: 1.5,          // Reduced range
+            range2: 0.5,
+            range3: 0.2
         };
 
-        // Subtle camera drift - like you're slightly shifting weight while watching
+        // Minimal camera drift - very calm
         const camMove = {
             phaseX: Math.random() * Math.PI * 2,
             phaseY: Math.random() * Math.PI * 2,
             phaseLookX: Math.random() * Math.PI * 2,
             phaseLookY: Math.random() * Math.PI * 2,
-            speedX: 0.00003,    // Slow drift
-            speedY: 0.000025,
-            speedLookX: 0.00002,
-            speedLookY: 0.000015,
-            rangeX: 0.25,       // Side drift (viewer sway)
-            rangeY: 0.12,       // Up/down drift
-            rangeLookX: 0.03,   // Slight gaze wander
-            rangeLookY: 0.02
+            speedX: 0.00001,    // Very slow drift
+            speedY: 0.000008,
+            speedLookX: 0.000005,
+            speedLookY: 0.000004,
+            rangeX: 0.05,       // Minimal side drift
+            rangeY: 0.03,       // Minimal up/down
+            rangeLookX: 0.008,  // Almost no gaze wander
+            rangeLookY: 0.005
         };
         const perf = { frames: 0, startTime: 0, checked: false, bloomDisabled: false };
         let eyeMeshes = [];

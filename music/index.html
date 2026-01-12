@@ -1992,21 +1992,47 @@ function stopVisualization() {
     applyAudioEffects(0, 0, 0);
 }
 
+// Track bass for distortion decay
+let lastBassHit = 0;
+let distortionDecay = 0;
+
 function applyAudioEffects(bass, mid, high) {
     const operatorEl = document.getElementById('operator-bg');
     if (!operatorEl || !operatorEl.classList.contains('active')) return;
 
-    // Bass = zoom pulse (scale effect)
-    const zoomAmount = 1 + (bass * 0.15);  // Up to 15% zoom on bass hits
+    // Detect bass hit (threshold crossing)
+    const bassThreshold = 0.6;
+    const isBassHit = bass > bassThreshold;
 
-    // Mid = glow intensity
-    const glowIntensity = 0.3 + (mid * 0.7);  // 30-100% glow
+    // Update distortion on bass hit, otherwise decay
+    if (isBassHit && bass > lastBassHit) {
+        distortionDecay = Math.min(1, bass * 1.2);  // Intensity based on bass strength
+    } else {
+        distortionDecay *= 0.85;  // Quick decay
+    }
+    lastBassHit = bass;
 
-    // Apply transform for zoom effect
-    operatorEl.style.transform = `translate(-50%, -50%) scale(${zoomAmount})`;
+    // Bass = horizontal displacement distortion (glitch effect)
+    const displaceX = distortionDecay * (Math.random() - 0.5) * 8;  // Random horizontal jitter
+    const displaceY = distortionDecay * (Math.random() - 0.5) * 3;  // Smaller vertical jitter
 
-    // Apply glow via filter or opacity variation
-    operatorEl.style.filter = `brightness(${0.8 + mid * 0.4}) drop-shadow(0 0 ${20 + bass * 80}px rgba(0, 255, 0, ${glowIntensity}))`;
+    // Chromatic aberration simulation via blur + contrast shift
+    const blurAmount = distortionDecay * 2;  // Up to 2px blur on strong hits
+    const contrastShift = 1 + (distortionDecay * 0.3);  // Slight contrast boost
+
+    // Mid = subtle glow intensity
+    const glowIntensity = 0.2 + (mid * 0.4);  // More subtle glow
+
+    // Apply distortion transform (displacement instead of zoom)
+    operatorEl.style.transform = `translate(calc(-50% + ${displaceX}px), calc(-50% + ${displaceY}px))`;
+
+    // Apply distortion filter (blur + contrast on bass, glow on mid)
+    operatorEl.style.filter = `
+        blur(${blurAmount}px)
+        contrast(${contrastShift})
+        brightness(${0.9 + mid * 0.2})
+        drop-shadow(0 0 ${15 + bass * 40}px rgba(0, 255, 0, ${glowIntensity}))
+    `;
 
     // If operator-face component exists, send it the audio data
     const operatorFace = operatorEl.querySelector('operator-face');
