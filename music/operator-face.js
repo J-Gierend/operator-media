@@ -389,15 +389,8 @@ class OperatorFace extends HTMLElement {
         };
 
         const checkPerformance = () => {
-            if (perf.checked) return;
-            perf.frames++;
-            if (perf.startTime === 0) { perf.startTime = Date.now(); return; }
-            const elapsed = Date.now() - perf.startTime;
-            if (elapsed > 2000) {
-                const fps = perf.frames / (elapsed / 1000);
-                if (fps < 25) { bloomPass.strength = 0; perf.bloomDisabled = true; }
-                perf.checked = true;
-            }
+            // Performance check disabled - was killing bloom on fullscreen resize
+            perf.checked = true;
         };
 
         let lastT = Date.now();
