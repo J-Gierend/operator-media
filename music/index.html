@@ -944,19 +944,36 @@
             pointer-events: none;
         }
 
-        /* Fullscreen Requirement Overlay - MANDATORY */
+        /* Fullscreen Requirement Overlay - Terminal Style */
         #fullscreen-hint {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: #000;
+            background: radial-gradient(ellipse at center, #0a0a0a 0%, #000 100%);
             z-index: 10000;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: opacity 0.5s ease-out;
+        }
+
+        #fullscreen-hint::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 255, 0, 0.03),
+                rgba(0, 255, 0, 0.03) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            pointer-events: none;
         }
 
         #fullscreen-hint.hidden {
@@ -965,44 +982,69 @@
         }
 
         #fullscreen-hint .hint-content {
-            background: #fff;
+            background: rgba(0, 20, 0, 0.8);
+            border: 1px solid var(--green-primary);
+            box-shadow: 0 0 40px rgba(0, 255, 0, 0.2), inset 0 0 60px rgba(0, 255, 0, 0.05);
             padding: 60px 80px;
             text-align: center;
             max-width: 600px;
+            position: relative;
+        }
+
+        #fullscreen-hint .hint-content::before {
+            content: '[ SYSTEM ]';
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: #000;
+            padding: 0 15px;
+            font-size: 0.75rem;
+            color: var(--green-dim);
+            letter-spacing: 3px;
         }
 
         #fullscreen-hint .hint-title {
             font-family: 'Consolas', 'Lucida Console', monospace;
-            font-size: 1.2rem;
-            color: #000;
+            font-size: 1.4rem;
+            color: var(--green-bright);
             margin-bottom: 30px;
             text-transform: uppercase;
-            letter-spacing: 3px;
+            letter-spacing: 4px;
+            text-shadow: 0 0 10px var(--green-primary);
         }
 
         #fullscreen-hint .hint-text {
             font-family: 'Consolas', 'Lucida Console', monospace;
             font-size: 1rem;
-            color: #333;
+            color: var(--green-dim);
             margin-bottom: 40px;
             line-height: 1.8;
         }
 
         #fullscreen-hint .hint-key {
             font-family: 'Consolas', 'Lucida Console', monospace;
-            font-size: 3rem;
+            font-size: 3.5rem;
             font-weight: bold;
-            color: #000;
-            padding: 20px 50px;
-            border: 3px solid #000;
+            color: var(--green-bright);
+            padding: 20px 60px;
+            border: 2px solid var(--green-primary);
             display: inline-block;
             margin-bottom: 30px;
+            text-shadow: 0 0 20px var(--green-primary), 0 0 40px var(--green-dim);
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3), inset 0 0 20px rgba(0, 255, 0, 0.1);
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(0, 255, 0, 0.3), inset 0 0 20px rgba(0, 255, 0, 0.1); }
+            50% { box-shadow: 0 0 40px rgba(0, 255, 0, 0.5), inset 0 0 30px rgba(0, 255, 0, 0.2); }
         }
 
         #fullscreen-hint .hint-subtext {
             font-family: 'Consolas', 'Lucida Console', monospace;
             font-size: 0.85rem;
-            color: #666;
+            color: var(--green-dark);
+            letter-spacing: 1px;
         }
 
         /* Ensure content is above face with backdrop */
