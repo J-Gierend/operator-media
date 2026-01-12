@@ -918,6 +918,63 @@
             pointer-events: none;
         }
 
+        /* Fullscreen Hint Popup */
+        #fullscreen-hint {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            pointer-events: none;
+        }
+
+        #fullscreen-hint.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        #fullscreen-hint .hint-content {
+            background: #000;
+            border: 1px solid var(--green);
+            padding: 20px 30px;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+        }
+
+        #fullscreen-hint .hint-text {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 1rem;
+            color: var(--green);
+            margin-bottom: 10px;
+        }
+
+        #fullscreen-hint .hint-key {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--green);
+            text-shadow: 0 0 10px var(--green);
+            margin-bottom: 15px;
+        }
+
+        #fullscreen-hint .hint-dismiss {
+            background: transparent;
+            border: 1px solid var(--green);
+            color: var(--green);
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.9rem;
+            padding: 8px 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        #fullscreen-hint .hint-dismiss:hover {
+            background: var(--green);
+            color: #000;
+        }
+
         /* Ensure content is above face with backdrop */
         nav, main, footer {
             position: relative;
@@ -1000,6 +1057,15 @@
     <!-- Music Annotations Overlay -->
     <div id="music-annotation">
         <div class="annotation-text"></div>
+    </div>
+
+    <!-- Fullscreen Hint -->
+    <div id="fullscreen-hint">
+        <div class="hint-content">
+            <div class="hint-text">Fuer das beste Erlebnis: Vollbild-Modus</div>
+            <div class="hint-key">F11</div>
+            <button class="hint-dismiss" onclick="dismissFullscreenHint()">Verstanden</button>
+        </div>
     </div>
 
 <nav>
@@ -2136,10 +2202,41 @@ const operatorBg = {
     }
 };
 
+// Fullscreen hint
+let fullscreenHintDismissed = false;
+
+function isFullscreen() {
+    return window.innerHeight === screen.height ||
+           document.fullscreenElement ||
+           document.webkitFullscreenElement;
+}
+
+function checkFullscreen() {
+    if (fullscreenHintDismissed) return;
+    const hint = document.getElementById('fullscreen-hint');
+    if (!hint) return;
+
+    if (isFullscreen()) {
+        hint.classList.remove('visible');
+    } else {
+        hint.classList.add('visible');
+    }
+}
+
+function dismissFullscreenHint() {
+    fullscreenHintDismissed = true;
+    const hint = document.getElementById('fullscreen-hint');
+    if (hint) hint.classList.remove('visible');
+}
+
 // Initialize on load
 document.addEventListener('DOMContentLoaded', () => {
     operatorBg.init();
     annotationController.init();
+
+    // Check fullscreen after a short delay
+    setTimeout(checkFullscreen, 2000);
+    window.addEventListener('resize', checkFullscreen);
 });
 
 function copyBrief() {
