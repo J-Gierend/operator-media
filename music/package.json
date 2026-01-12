@@ -1,0 +1,16 @@
+{
+  "name": "music",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "operator-face-beat.js",
+  "scripts": {
+    "test": "npx playwright test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@playwright/test": "^1.57.0"
+  }
+}
