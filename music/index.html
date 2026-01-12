@@ -805,27 +805,6 @@
             font-weight: normal;
         }
 
-        .copy-button {
-            margin-top: 28px;
-            padding: 16px 36px;
-            background: transparent;
-            color: var(--green-primary);
-            border: 2px solid var(--green-primary);
-            font-size: 16px;
-            font-weight: normal;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-family: inherit;
-        }
-
-        .copy-button:hover {
-            background: rgba(51, 204, 51, 0.1);
-            box-shadow: 0 0 20px rgba(51, 204, 51, 0.3);
-            color: var(--green-bright);
-        }
-
         /* Footer */
         footer {
             padding: 50px 0;
@@ -1190,7 +1169,7 @@
             <a href="#track-1">01 Acid Rain</a>
             <a href="#track-2">02 Oxbow B</a>
             <a href="#track-3">03 Anvil</a>
-            <a href="#track-4">04 Inertia</a>
+            <a href="#track-4">04 Cherry Moon</a>
             <a href="#produktion" data-i18n="nav.production">Produktion</a>
             <a href="#zusammenfassung" data-i18n="nav.brief">Brief</a>
             <div class="lang-toggle">
@@ -1444,7 +1423,7 @@
                             Modulationen) tauchen auf und verschwinden wieder.
                         </p>
                         <p style="margin-top: 12px;">
-                            Ab 0:45 etabliert sich ein definierter Beat mit <strong>präziser, uhrmacherartiger Rhythmik</strong>.
+                            Ab 0:45 etabliert sich ein definierter Beat mit <strong>präziser, maschinenartiger Rhythmik</strong>.
                             Der Reverb erzeugt Tiefe und Distanz, ohne den Mix zu verwaschen — jedes Element hat seinen
                             klar definierten Platz im Stereofeld.
                         </p>
@@ -1476,35 +1455,35 @@
                 </div>
             </article>
 
-            <!-- Track 4: Inertia -->
+            <!-- Track 4: Cherry Moon -->
             <article class="track-card text-hidden" id="track-4">
                 <div class="track-header">
                     <div class="track-number">Track 04</div>
-                    <h3 class="track-title">Inertia</h3>
+                    <h3 class="track-title">Cherry Moon</h3>
                     <div class="track-meta">
-                        <span class="track-meta-item">Album: <span>DROWN THE TRAITOR WITHIN (2019)</span></span>
+                        <span class="track-meta-item">Album: <span>ASK THE DUST (2015)</span></span>
                     </div>
                 </div>
 
-                <div class="audio-player" data-track-id="inertia">
+                <div class="audio-player" data-track-id="cherry-moon">
                     <div class="player-main">
-                        <button class="play-button" onclick="togglePlay('inertia', this)">
+                        <button class="play-button" onclick="togglePlay('cherry-moon', this)">
                             <svg class="play-icon" viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
                             <svg class="pause-icon" viewBox="0 0 24 24"><rect x="5" y="3" width="4" height="18"/><rect x="15" y="3" width="4" height="18"/></svg>
                         </button>
                         <div class="audio-info">
                             <div class="audio-status">Klicken zum Abspielen</div>
-                            <div class="audio-title">Inertia</div>
+                            <div class="audio-title">Cherry Moon</div>
                         </div>
                     </div>
                     <div class="player-waveform-container">
-                        <div class="waveform" id="waveform-inertia" onclick="seekTo('inertia', event)"></div>
+                        <div class="waveform" id="waveform-cherry-moon" onclick="seekTo('cherry-moon', event)"></div>
                         <div class="time-display">
-                            <span class="time-current" id="time-inertia">0:00</span>
-                            <span class="time-duration" id="duration-inertia">--:--</span>
+                            <span class="time-current" id="time-cherry-moon">0:00</span>
+                            <span class="time-duration" id="duration-cherry-moon">--:--</span>
                         </div>
                     </div>
-                    <audio id="player-inertia" src="audio/inertia.m4a" preload="metadata"></audio>
+                    <audio id="player-cherry-moon" src="audio/cherry-moon.m4a" preload="metadata"></audio>
                 </div>
 
                 <div class="track-content">
@@ -1531,7 +1510,7 @@
                         <div class="track-section-title" data-i18n="section.sound">Klangliche Beschreibung</div>
                         <p>
                             Ab 0:22 etabliert sich ein <strong>maschineller, pulsierender Beat</strong> — präzise wie
-                            ein Schweizer Uhrwerk, aber mit organischer Wärme durch analoge Sättigung. Der Bass ist
+                            eine industrielle Maschine, aber mit organischer Wärme durch analoge Sättigung. Der Bass ist
                             <strong>punchy und direkt</strong>, schneidet durch den Mix ohne zu dominieren.
                         </p>
                         <p style="margin-top: 12px;">
@@ -1550,7 +1529,7 @@
                         </p>
                         <div class="highlight-box">
                             <p>
-                                "Uhrmacher-Präzision" — jedes Element sitzt exakt, nichts ist überflüssig.
+                                "Maschinen-Präzision" — jedes Element sitzt exakt, nichts ist überflüssig.
                                 Die Energie ist kontrolliert, nie chaotisch.
                             </p>
                         </div>
@@ -1851,7 +1830,6 @@
                         <li><strong>Nicht generisch</strong> — Charakter vor Konvention</li>
                         <li><strong>Nicht chaotisch</strong> — kontrollierte Energie</li>
                         <li><strong>Keine Pop-Hooks</strong> — texturale statt eingängige Melodien</li>
-                        <li><strong>Nicht zu schnell</strong> — Tracks brauchen Zeit sich zu entwickeln</li>
                     </ul>
                 </div>
 
@@ -1871,18 +1849,6 @@
                 </div>
             </div>
 
-            <!-- Quick copy section -->
-            <div class="summary-box" style="margin-top: 48px;">
-                <h3 data-i18n="summary.box">Referenz-Tracks</h3>
-                <div class="summary-content">
-                    <p>
-                        Die 4 Tracks oben (Acid Rain, Oxbow B, Anvil, Inertia) definieren den gewünschten Sound-Raum.
-                        Diese sind das Ziel — bitte durchhören und den Vibe verinnerlichen.
-                    </p>
-                </div>
-                <button class="copy-button" onclick="copyBrief()" data-i18n="summary.copy">Kriterien kopieren</button>
-            </div>
-
         </div>
     </section>
 </main>
@@ -1897,7 +1863,17 @@
 // Audio Player Management
 const players = {};
 window.players = players;  // Expose for debugging/testing
-const trackIds = ['acid-rain', 'oxbow-b', 'anvil', 'inertia'];
+const trackIds = ['acid-rain', 'oxbow-b', 'anvil', 'cherry-moon'];
+
+// Per-track punch detection thresholds (tuned from audio analysis + manual tuning)
+// sensitivity: multiplier for thresholds (lower = more sensitive)
+// freqBins: how many FFT bins for bass (1-8, each ~172Hz)
+const trackPunchConfig = {
+    'acid-rain': { velocityThreshold: 0.128, levelThreshold: 0.368, sensitivity: 0.8, freqBins: 7 },
+    'oxbow-b': { velocityThreshold: 0.095, levelThreshold: 0.325, sensitivity: 0.8, freqBins: 8 },
+    'anvil': { velocityThreshold: 0.121, levelThreshold: 0.283, sensitivity: 1.0, freqBins: 3 },
+    'cherry-moon': { velocityThreshold: 0.179, levelThreshold: 0.359, sensitivity: 0.3, freqBins: 7 }
+};
 
 // ========================================
 // WEB AUDIO API - REAL-TIME ANALYSIS
@@ -1951,7 +1927,9 @@ function startVisualization() {
         analyser.getByteFrequencyData(frequencyData);
 
         // Split frequency data into bands
-        const bassEnd = Math.floor(frequencyData.length * 0.1);  // 0-10% = bass
+        // frequencyBins is adjustable (1-8), each bin ~172Hz with 256 fftSize
+        // 1 = 0-172Hz (sub-bass only), 3 = 0-516Hz (bass+punch), 8 = 0-1376Hz
+        const bassEnd = frequencyBins;  // Use adjustable frequency bins
         const midEnd = Math.floor(frequencyData.length * 0.5);   // 10-50% = mids
 
         // Calculate average levels for each band
@@ -1988,50 +1966,77 @@ function stopVisualization() {
         cancelAnimationFrame(animationFrameId);
         animationFrameId = null;
     }
+    // Reset transient detection
+    lastBass = 0;
+    distortionDecay = 0;
     // Reset effects
     applyAudioEffects(0, 0, 0);
 }
 
-// Track bass for distortion decay
-let lastBassHit = 0;
+// Transient detection for punch/kick hits (tuned from audio analysis)
+let lastBass = 0;
 let distortionDecay = 0;
+let lastPunchTime = 0;
+let sensitivityMultiplier = 1.0;
+let frequencyBins = 3;
+
+// Load per-track punch settings when track starts
+function loadTrackPunchSettings(trackId) {
+    const config = trackPunchConfig[trackId] || { sensitivity: 1.0, freqBins: 3 };
+    sensitivityMultiplier = config.sensitivity;
+    frequencyBins = config.freqBins;
+}
 
 function applyAudioEffects(bass, mid, high) {
     const operatorEl = document.getElementById('operator-bg');
     if (!operatorEl || !operatorEl.classList.contains('active')) return;
 
-    // Detect bass hit (threshold crossing)
-    const bassThreshold = 0.6;
-    const isBassHit = bass > bassThreshold;
+    // Get per-track thresholds (fall back to defaults if track not found)
+    const trackId = currentlyPlaying || operatorBg?.currentVideoId;
+    const config = trackPunchConfig[trackId] || { velocityThreshold: 0.12, levelThreshold: 0.35, sensitivity: 1.0, freqBins: 3 };
 
-    // Update distortion on bass hit, otherwise decay
-    if (isBassHit && bass > lastBassHit) {
-        distortionDecay = Math.min(1, bass * 1.2);  // Intensity based on bass strength
+    // Apply sensitivity multiplier (higher = less sensitive, lower = more sensitive)
+    const adjustedVelocityThreshold = config.velocityThreshold * sensitivityMultiplier;
+    const adjustedLevelThreshold = config.levelThreshold * sensitivityMultiplier;
+
+    // Velocity-based detection with per-track tuning + manual sensitivity
+    const bassVelocity = bass - lastBass;
+    const isPunch = bassVelocity > adjustedVelocityThreshold && bass > adjustedLevelThreshold;
+
+    // Cooldown: real punches are 180ms+ apart
+    const now = performance.now();
+    const canPunch = (now - lastPunchTime) > 180;
+
+    // Update on punch detection
+    if (isPunch && canPunch) {
+        // Intensity based on how strong the punch is relative to threshold
+        const velocityStrength = (bassVelocity - config.velocityThreshold) / config.velocityThreshold;
+        const levelStrength = (bass - config.levelThreshold) / config.levelThreshold;
+        const punchIntensity = Math.min(1, (velocityStrength + levelStrength) * 0.6);
+        distortionDecay = Math.max(distortionDecay, punchIntensity);
+        lastPunchTime = now;
     } else {
-        distortionDecay *= 0.85;  // Quick decay
+        distortionDecay *= 0.92;  // Smooth decay
     }
-    lastBassHit = bass;
 
-    // Bass = horizontal displacement distortion (glitch effect)
-    const displaceX = distortionDecay * (Math.random() - 0.5) * 8;  // Random horizontal jitter
-    const displaceY = distortionDecay * (Math.random() - 0.5) * 3;  // Smaller vertical jitter
+    lastBass = bass;
 
-    // Chromatic aberration simulation via blur + contrast shift
-    const blurAmount = distortionDecay * 2;  // Up to 2px blur on strong hits
-    const contrastShift = 1 + (distortionDecay * 0.3);  // Slight contrast boost
+    // Dark base, flash bright on punch - NO shaking, stable image
+    const baseBrightness = 0.35;
+    const punchBrightness = baseBrightness + (distortionDecay * 0.65);  // 0.35 -> 1.0 on punch
 
-    // Mid = subtle glow intensity
-    const glowIntensity = 0.2 + (mid * 0.4);  // More subtle glow
+    // Glow: subtle at base, stronger on punch
+    const baseGlow = 0.15;
+    const punchGlow = baseGlow + (distortionDecay * 0.5);
 
-    // Apply distortion transform (displacement instead of zoom)
-    operatorEl.style.transform = `translate(calc(-50% + ${displaceX}px), calc(-50% + ${displaceY}px))`;
+    // Keep transform stable (centered, no jitter)
+    operatorEl.style.transform = 'translate(-50%, -50%)';
 
-    // Apply distortion filter (blur + contrast on bass, glow on mid)
+    // Apply filter: dark base, flash bright on punch
     operatorEl.style.filter = `
-        blur(${blurAmount}px)
-        contrast(${contrastShift})
-        brightness(${0.9 + mid * 0.2})
-        drop-shadow(0 0 ${15 + bass * 40}px rgba(0, 255, 0, ${glowIntensity}))
+        brightness(${punchBrightness})
+        contrast(${1 + distortionDecay * 0.2})
+        drop-shadow(0 0 ${10 + distortionDecay * 30}px rgba(0, 255, 0, ${punchGlow}))
     `;
 
     // If operator-face component exists, send it the audio data
@@ -2137,12 +2142,12 @@ const annotationTranslations = {
         'anvil': [
             [10, "Mysterioese, schwebende Melodielinie"],
             [25, "Langsame Steigerung Spannungsaufbau"],
-            [43, "Definierter Beat mit Uhrmacher-Praezision"]
+            [43, "Definierter Beat mit Maschinen-Praezision"]
         ],
-        'inertia': [
-            [22, "Maschineller, pulsierender Beat"],
-            [35, "Praezise wie ein Schweizer Uhrwerk"],
-            [50, "Punchy, direkter Bass"]
+        'cherry-moon': [
+            [15, "Atmosphaerischer, traeumerischer Einstieg"],
+            [30, "Langsame, melancholische Melodie"],
+            [50, "Tiefe, warme Bass-Texturen"]
         ],
         'oxbow-b': [
             [10, "Leicht bedrohlich aber unique"],
@@ -2162,12 +2167,12 @@ const annotationTranslations = {
         'anvil': [
             [10, "Mysterious, floating melody line"],
             [25, "Slow build-up, tension rising"],
-            [43, "Defined beat with watchmaker precision"]
+            [43, "Defined beat with machine precision"]
         ],
-        'inertia': [
-            [22, "Mechanical, pulsating beat"],
-            [35, "Precise like a Swiss clockwork"],
-            [50, "Punchy, direct bass"]
+        'cherry-moon': [
+            [15, "Atmospheric, dreamy intro"],
+            [30, "Slow, melancholic melody"],
+            [50, "Deep, warm bass textures"]
         ],
         'oxbow-b': [
             [10, "Slightly threatening but unique"],
@@ -2217,7 +2222,7 @@ document.addEventListener('DOMContentLoaded', () => {
 const trackBPM = {
     'acid-rain': 112,
     'anvil': 101,
-    'inertia': 95,
+    'cherry-moon': 90,
     'oxbow-b': 112
 };
 
@@ -2232,12 +2237,12 @@ const trackAnnotations = {
     'anvil': [
         [10, "Mysterioese, schwebende Melodielinie"],
         [25, "Langsame Steigerung Spannungsaufbau"],
-        [43, "Definierter Beat mit Uhrmacher-Praezision"]
+        [43, "Definierter Beat mit Maschinen-Praezision"]
     ],
-    'inertia': [
-        [22, "Maschineller, pulsierender Beat"],
-        [35, "Praezise wie ein Schweizer Uhrwerk"],
-        [50, "Punchy, direkter Bass"]
+    'cherry-moon': [
+        [15, "Atmosphaerischer, traeumerischer Einstieg"],
+        [30, "Langsame, melancholische Melodie"],
+        [50, "Tiefe, warme Bass-Texturen"]
     ],
     'oxbow-b': [
         [10, "Leicht bedrohlich aber unique"],
@@ -2351,6 +2356,7 @@ const annotationController = {
 
 const waveformBars = {};
 let currentlyPlaying = null;
+window.currentlyPlaying = null;  // Expose for testing
 let updateInterval = null;
 
 // Generate pseudo-random waveform heights based on video ID
@@ -2426,13 +2432,20 @@ function onAudioPlay(trackId) {
     waveform.classList.add('playing');
     timeEl.classList.add('playing');
 
+    // Show sensitivity tuning slider with per-track settings
+    loadTrackPunchSettings(trackId);
+
     // Scroll to track card and hide text during animation
     const trackCard = playerDiv.closest('.track-card');
     if (trackCard) {
         trackCard.classList.add('text-hidden');
         const navHeight = 60;
         const targetTop = trackCard.getBoundingClientRect().top + window.scrollY - navHeight;
+        // Flag to prevent scroll listener from triggering skipAnimation
+        window.isProgrammaticScroll = true;
         window.scrollTo({ top: targetTop, behavior: 'smooth' });
+        // Clear flag after scroll completes
+        setTimeout(() => { window.isProgrammaticScroll = false; }, 1000);
     }
 
     // Start Ghost Operator animation
@@ -2655,8 +2668,9 @@ const operatorBg = {
 
     start(videoId) {
         this.isAnimating = true;
+        this.currentVideoId = videoId;  // Track current video for text reveal
 
-        // Cancel any pending reveal timeouts from previous track
+        // Cancel any pending timeouts from previous track
         if (this.textRevealTimeout) {
             clearTimeout(this.textRevealTimeout);
             this.textRevealTimeout = null;
@@ -2665,6 +2679,18 @@ const operatorBg = {
             clearTimeout(this.unlockTimeout);
             this.unlockTimeout = null;
         }
+        if (this.faceShowTimeout) {
+            clearTimeout(this.faceShowTimeout);
+            this.faceShowTimeout = null;
+        }
+        if (this.overlayShowTimeout) {
+            clearTimeout(this.overlayShowTimeout);
+            this.overlayShowTimeout = null;
+        }
+
+        // Reset face and overlay first (in case switching from another track)
+        if (this.element) this.element.classList.remove('active');
+        if (this.blackOverlay) this.blackOverlay.classList.remove('active');
 
         // Lock all user interaction during animation (both html and body for scroll lock)
         document.documentElement.classList.add('animation-locked');
@@ -2694,12 +2720,12 @@ const operatorBg = {
         }
 
         // Show black overlay after content starts fading
-        setTimeout(() => {
+        this.overlayShowTimeout = setTimeout(() => {
             if (this.blackOverlay) this.blackOverlay.classList.add('active');
         }, 2000);
 
         // Show operator face
-        setTimeout(() => {
+        this.faceShowTimeout = setTimeout(() => {
             if (this.element) this.element.classList.add('active');
         }, 3000);
 
@@ -2707,8 +2733,8 @@ const operatorBg = {
     },
 
     revealContent() {
-        // Capture the video ID NOW - don't use currentlyPlaying later as it may change
-        const videoIdForThisReveal = currentlyPlaying;
+        // Use stored currentVideoId, fallback to currentlyPlaying
+        const videoIdForThisReveal = this.currentVideoId || currentlyPlaying;
 
         console.log('[revealContent] Called for:', videoIdForThisReveal);
 
@@ -2770,10 +2796,26 @@ const operatorBg = {
     },
 
     skipAnimation() {
-        // Cancel pending timeout
+        // Cancel all pending timeouts
         if (this.animationTimeout) {
             clearTimeout(this.animationTimeout);
             this.animationTimeout = null;
+        }
+        if (this.faceShowTimeout) {
+            clearTimeout(this.faceShowTimeout);
+            this.faceShowTimeout = null;
+        }
+        if (this.overlayShowTimeout) {
+            clearTimeout(this.overlayShowTimeout);
+            this.overlayShowTimeout = null;
+        }
+        if (this.textRevealTimeout) {
+            clearTimeout(this.textRevealTimeout);
+            this.textRevealTimeout = null;
+        }
+        if (this.unlockTimeout) {
+            clearTimeout(this.unlockTimeout);
+            this.unlockTimeout = null;
         }
 
         // Cancel annotation reveal timeout
@@ -2792,11 +2834,13 @@ const operatorBg = {
             this.content.classList.remove('content-reveal');
             this.content.style.animation = 'none';
             this.content.style.opacity = '1';
+            this.content.style.transition = '';
         }
 
-        // Show text on current track
-        if (currentlyPlaying) {
-            const playingCard = document.querySelector(`[data-track-id="${currentlyPlaying}"]`)?.closest('.track-card');
+        // Show text on current track (use stored currentVideoId or fallback to currentlyPlaying)
+        const trackToReveal = this.currentVideoId || currentlyPlaying;
+        if (trackToReveal) {
+            const playingCard = document.querySelector(`[data-track-id="${trackToReveal}"]`)?.closest('.track-card');
             if (playingCard) playingCard.classList.remove('text-hidden');
         }
 
@@ -2870,6 +2914,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Scroll reveals content if it's faded out
     let lastScrollY = window.scrollY;
     window.addEventListener('scroll', () => {
+        // Skip if this is a programmatic scroll (from track switching)
+        if (window.isProgrammaticScroll) return;
+
         const scrollDelta = Math.abs(window.scrollY - lastScrollY);
         if (scrollDelta > 20) {  // User is actively scrolling
             operatorBg.skipAnimation();
@@ -2877,34 +2924,6 @@ document.addEventListener('DOMContentLoaded', () => {
         lastScrollY = window.scrollY;
     });
 });
-
-function copyBrief() {
-    const briefText = `SOUNDTRACK BRIEF: Im Stil von LORN
-
-Stil: Industrial-Synthwave mit Ambient-DNA. Dark Electronic mit cinematischer Tiefe — mysteriös und futuristisch, aber nicht Horror.
-
-Low-End & Rhythmus: Punchy, tight Kick & Bass — präsent im Mix, aber nicht überladen. Mechanische, maschinenartige Grooves mit industriellem Character. Half-Time-Feels für Schwere und Gewicht.
-
-Melodie & Harmonie: Simple, repetitive Melodielinien — weniger ist mehr. Texturale Melodien statt Pop-Hooks. Interessante Tonfolgen, die sich langsam entwickeln.
-
-Produktion & Sound-Design: Viel Reverb & Delay für Raum und Tiefe. Tape-Sättigung für warmen, analogen Charakter. Glitches, Filter-Sweeps, Modulationen. Automationen auf Effekten für konstante Bewegung.
-
-Stimmung: Wie eine unbekannte Lebensform, die unique ist — leicht ominös, aber nicht gruselig. Die Tracks sollen sich entwickeln wie lebende Organismen. Dystopisch, futuristisch, cinematisch.
-
-Referenz-Tracks:
-1. Lorn - Acid Rain: https://youtube.com/watch?v=evgoa2uVcuE
-2. Lorn - Anvil: https://youtube.com/watch?v=CqaAs_3azSs
-3. Lorn - Inertia: https://youtube.com/watch?v=ZcM4wn_CD3U
-4. Lorn - Oxbow B: https://youtube.com/watch?v=mFa3rUm6wtY`;
-
-    navigator.clipboard.writeText(briefText).then(() => {
-        const btn = document.querySelector('.copy-button');
-        btn.textContent = 'Kopiert!';
-        setTimeout(() => {
-            btn.textContent = 'Brief kopieren';
-        }, 2000);
-    });
-}
 </script>
 
 <!-- Operator Face Component -->

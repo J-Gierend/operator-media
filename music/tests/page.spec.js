@@ -29,7 +29,7 @@ test.describe('OPERATOR Music Page', () => {
     expect(audioCount).toBe(4);
 
     // Check each track has proper structure
-    const tracks = ['acid-rain', 'oxbow-b', 'anvil', 'inertia'];
+    const tracks = ['acid-rain', 'oxbow-b', 'anvil', 'cherry-moon'];
     for (const trackId of tracks) {
       const player = page.locator(`[data-track-id="${trackId}"]`);
       await expect(player).toBeVisible();
@@ -111,6 +111,88 @@ test.describe('OPERATOR Music Page', () => {
     expect(oxbowPlaying).toBe(true);
 
     console.log('[PASS] Switching tracks stops previous track');
+  });
+
+  test('switching tracks should reset and re-animate operator face', async ({ page }) => {
+    const operatorBg = page.locator('#operator-bg');
+
+    // Start playing Acid Rain and wait for face to appear
+    const acidRainBtn = page.locator('[data-track-id="acid-rain"] .play-button');
+    await acidRainBtn.click();
+    await page.waitForTimeout(4000);
+
+    // Face should be active
+    let hasActiveClass = await operatorBg.evaluate(el => el.classList.contains('active'));
+    expect(hasActiveClass).toBe(true);
+
+    // Remove animation-locked before switching (buttons blocked during animation)
+    await page.evaluate(() => {
+      document.documentElement.classList.remove('animation-locked');
+      document.body.classList.remove('animation-locked');
+    });
+
+    // Now switch to Oxbow B
+    const oxbowBtn = page.locator('[data-track-id="oxbow-b"] .play-button');
+    await oxbowBtn.click();
+
+    // Face should be reset (not active) immediately after switch
+    await page.waitForTimeout(200);
+    hasActiveClass = await operatorBg.evaluate(el => el.classList.contains('active'));
+    expect(hasActiveClass).toBe(false);
+
+    // Wait for animation to complete - face should become active again (3000ms + buffer)
+    await page.waitForTimeout(4000);
+
+    // Debug: check operatorBg state
+    const debugInfo = await page.evaluate(() => ({
+      faceHasActive: document.getElementById('operator-bg')?.classList.contains('active'),
+      currentVideoId: window.operatorBg?.currentVideoId,
+      isAnimating: window.operatorBg?.isAnimating,
+      currentlyPlaying: window.currentlyPlaying,
+      oxbowAudioPaused: document.getElementById('player-oxbow-b')?.paused
+    }));
+    console.log('Debug info:', debugInfo);
+
+    hasActiveClass = await operatorBg.evaluate(el => el.classList.contains('active'));
+    expect(hasActiveClass).toBe(true);
+
+    console.log('[PASS] Switching tracks resets and re-animates operator face');
+  });
+
+  test('switching tracks should reveal text for new track after animation', async ({ page }) => {
+    // Start playing Acid Rain and wait for animation to complete
+    const acidRainBtn = page.locator('[data-track-id="acid-rain"] .play-button');
+    await acidRainBtn.click();
+
+    // Wait for animation to start revealing content
+    await page.waitForTimeout(8000);
+
+    // Skip animation to reveal content faster
+    await page.evaluate(() => window.operatorBg.skipAnimation());
+    await page.waitForTimeout(500);
+
+    // Acid Rain text should be visible
+    const acidRainCard = page.locator('#track-1');
+    let hasTextHidden = await acidRainCard.evaluate(el => el.classList.contains('text-hidden'));
+    expect(hasTextHidden).toBe(false);
+
+    // Now switch to Oxbow B
+    const oxbowBtn = page.locator('[data-track-id="oxbow-b"] .play-button');
+    await oxbowBtn.click();
+
+    // Wait for new animation to complete
+    await page.waitForTimeout(8000);
+
+    // Skip animation
+    await page.evaluate(() => window.operatorBg.skipAnimation());
+    await page.waitForTimeout(500);
+
+    // Oxbow B text should be visible (not hidden)
+    const oxbowCard = page.locator('#track-2');
+    hasTextHidden = await oxbowCard.evaluate(el => el.classList.contains('text-hidden'));
+    expect(hasTextHidden).toBe(false);
+
+    console.log('[PASS] Switching tracks reveals text for new track');
   });
 
   test('nav links should scroll to correct position', async ({ page }) => {
