@@ -294,43 +294,86 @@ class OperatorFace extends HTMLElement {
         // Glitch state - timer based for controlled frequency
         const glitchState = {
             lastGlitch: 0,
-            minInterval: 4000,  // Minimum 4 seconds between glitches
+            minInterval: 2000,  // Minimum 2 seconds between glitches
             current: 0,
-            decay: 0
+            displacement: { x: 0, y: 0 },
+            scaleGlitch: 0,
+            dissolve: 0
         };
 
-        // Continuous electric pulse - like electricity flowing through wires
-        const updatePulse = (t) => {
-            if (!wireframeMat) return;
+        // Holographic instability state
+        const holoState = {
+            phase: Math.random() * Math.PI * 2,
+            scanLine: 0
+        };
 
-            // Decay any active glitch
+        // Continuous electric pulse with holographic glitching
+        const updatePulse = (t) => {
+            if (!wireframeMat || !headMesh) return;
+
+            // Constant holographic instability - subtle wavering
+            holoState.phase += 0.05;
+            const holoWaver = Math.sin(holoState.phase) * 0.02 + Math.sin(holoState.phase * 1.7) * 0.015;
+            const holoFlicker = (Math.random() - 0.5) * 0.08;
+
+            // Decay glitch effects
             if (glitchState.current > 0) {
-                glitchState.current *= 0.85;  // Quick decay
+                glitchState.current *= 0.88;
                 if (glitchState.current < 0.01) glitchState.current = 0;
             }
+            glitchState.displacement.x *= 0.85;
+            glitchState.displacement.y *= 0.85;
+            glitchState.scaleGlitch *= 0.9;
+            glitchState.dissolve *= 0.92;
 
-            // Only check for new glitch if enough time has passed
+            // Random glitch triggers
             if (t - glitchState.lastGlitch > glitchState.minInterval) {
                 const glitchChance = Math.random();
-                if (glitchChance > 0.995) {
-                    // Strong glitch spike - zzzt! (rare)
-                    glitchState.current = 0.4 + Math.random() * 0.4;
+                if (glitchChance > 0.992) {
+                    // Strong holographic disruption
+                    glitchState.current = 0.5 + Math.random() * 0.5;
+                    glitchState.displacement.x = (Math.random() - 0.5) * 0.3;
+                    glitchState.displacement.y = (Math.random() - 0.5) * 0.15;
+                    glitchState.scaleGlitch = (Math.random() - 0.5) * 0.1;
+                    glitchState.dissolve = 0.3 + Math.random() * 0.4;
                     glitchState.lastGlitch = t;
-                    glitchState.minInterval = 5000 + Math.random() * 5000;  // 5-10 sec until next possible
-                } else if (glitchChance > 0.98) {
-                    // Medium glitch (occasional)
-                    glitchState.current = 0.2 + Math.random() * 0.2;
+                    glitchState.minInterval = 3000 + Math.random() * 4000;
+                } else if (glitchChance > 0.97) {
+                    // Medium glitch - partial dissolve
+                    glitchState.current = 0.2 + Math.random() * 0.3;
+                    glitchState.displacement.x = (Math.random() - 0.5) * 0.15;
+                    glitchState.dissolve = 0.15 + Math.random() * 0.2;
                     glitchState.lastGlitch = t;
-                    glitchState.minInterval = 3000 + Math.random() * 4000;  // 3-7 sec until next possible
+                    glitchState.minInterval = 2000 + Math.random() * 3000;
+                } else if (glitchChance > 0.94) {
+                    // Small flicker
+                    glitchState.current = 0.1 + Math.random() * 0.15;
+                    glitchState.lastGlitch = t;
+                    glitchState.minInterval = 1500 + Math.random() * 2000;
                 }
             }
 
-            // Base electric hum - very subtle
-            const wave = Math.sin(t * 0.008) * 0.05 + 0.5;
-            const flicker = Math.random() * 0.03;
+            // Apply holographic displacement to mesh position
+            const baseX = 0;
+            const baseY = -2;
+            headMesh.position.x = baseX + glitchState.displacement.x + holoWaver * 0.5;
+            headMesh.position.y = baseY + glitchState.displacement.y;
+            occlusionMesh.position.x = headMesh.position.x;
+            occlusionMesh.position.y = headMesh.position.y;
 
-            wireframeMat.opacity = pulseState.baseOpacity + wave * 0.05 + glitchState.current + flicker;
-            bloomPass.strength = pulseState.baseBloom + wave * 0.05 + glitchState.current * 1.5 + flicker;
+            // Scale glitch
+            const scaleBase = 1.8;
+            const scaleMod = scaleBase + glitchState.scaleGlitch;
+            headMesh.scale.x = scaleMod + Math.sin(holoState.phase * 3) * 0.005;
+            occlusionMesh.scale.x = headMesh.scale.x;
+
+            // Base electric hum with holographic instability
+            const wave = Math.sin(t * 0.008) * 0.05 + 0.5;
+
+            // Opacity with dissolve effect
+            const dissolveEffect = glitchState.dissolve > 0 ? -glitchState.dissolve * 0.5 : 0;
+            wireframeMat.opacity = Math.max(0.1, pulseState.baseOpacity + wave * 0.05 + glitchState.current + holoFlicker + dissolveEffect);
+            bloomPass.strength = pulseState.baseBloom + wave * 0.05 + glitchState.current * 1.5 + Math.abs(holoFlicker) * 0.5;
         };
 
         const animateEyes = (t, dt) => {
