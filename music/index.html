@@ -1169,7 +1169,7 @@
     </div>
 
     <!-- Fullscreen Requirement Overlay -->
-    <div id="fullscreen-hint">
+    <div id="fullscreen-hint" onclick="this.classList.add('hidden')">
         <div class="hint-content">
             <div class="hint-title" data-i18n="fullscreen.title">Vollbild erforderlich</div>
             <div class="hint-text" data-i18n="fullscreen.text">
@@ -1179,6 +1179,7 @@
             </div>
             <div class="hint-key">F11</div>
             <div class="hint-subtext" data-i18n="fullscreen.subtext">Druecken Sie F11 um fortzufahren</div>
+            <div style="margin-top: 20px; font-size: 12px; color: var(--green-dark);">(oder klicken zum Fortfahren)</div>
         </div>
     </div>
 
@@ -2786,10 +2787,8 @@ function isFullscreen() {
         document.msFullscreenElement) {
         return true;
     }
-    // Check if window size is close to screen size (within 100px tolerance for DPI scaling)
-    const heightMatch = Math.abs(window.innerHeight - screen.height) < 100;
-    const widthMatch = Math.abs(window.innerWidth - screen.width) < 100;
-    return heightMatch && widthMatch;
+    // F11 fullscreen - just check if window height is close to screen height
+    return window.innerHeight >= screen.height - 100;
 }
 
 function checkFullscreen() {
@@ -2820,6 +2819,15 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('webkitfullscreenchange', checkFullscreen);
     document.addEventListener('mozfullscreenchange', checkFullscreen);
     document.addEventListener('MSFullscreenChange', checkFullscreen);
+
+    // F11 browser fullscreen doesn't trigger fullscreenchange - listen for keydown
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'F11') {
+            // Check after a brief delay to let browser update
+            setTimeout(checkFullscreen, 100);
+            setTimeout(checkFullscreen, 500);
+        }
+    });
 
     // Scroll reveals content if it's faded out
     let lastScrollY = window.scrollY;
