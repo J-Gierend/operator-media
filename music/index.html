@@ -2238,6 +2238,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // Check fullscreen after a short delay
     setTimeout(checkFullscreen, 2000);
     window.addEventListener('resize', checkFullscreen);
+
+    // Scroll reveals content if it's faded out
+    let lastScrollY = window.scrollY;
+    window.addEventListener('scroll', () => {
+        const scrollDelta = Math.abs(window.scrollY - lastScrollY);
+        if (scrollDelta > 20) {  // User is actively scrolling
+            operatorBg.skipAnimation();
+        }
+        lastScrollY = window.scrollY;
+    });
 });
 
 function copyBrief() {

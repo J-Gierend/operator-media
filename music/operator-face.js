@@ -291,16 +291,18 @@ class OperatorFace extends HTMLElement {
             }
         };
 
-        // Glitch state - quick flash then pause
+        // Glitch state - ultra quick flash then pause
         const glitchState = {
             lastGlitch: 0,
             nextGlitch: 3000 + Math.random() * 5000,  // Random 3-8 seconds between glitches
             active: false,
             flashFrames: 0,
-            flashDuration: 0
+            flashDuration: 0,
+            dispX: 0,
+            dispY: 0
         };
 
-        // Quick flash glitch effect
+        // Ultra quick flash glitch effect
         const updatePulse = (t) => {
             if (!wireframeMat || !headMesh) return;
 
@@ -309,43 +311,63 @@ class OperatorFace extends HTMLElement {
                 // Start a quick glitch flash
                 glitchState.active = true;
                 glitchState.flashFrames = 0;
-                glitchState.flashDuration = 3 + Math.floor(Math.random() * 5);  // 3-7 frames of glitch
+                glitchState.flashDuration = 1 + Math.floor(Math.random() * 3);  // 1-3 frames only
+                // Random direction: horizontal, vertical, or diagonal
+                const dir = Math.random();
+                if (dir < 0.33) {
+                    // Horizontal
+                    glitchState.dispX = (Math.random() - 0.5) * 0.25;
+                    glitchState.dispY = 0;
+                } else if (dir < 0.66) {
+                    // Vertical
+                    glitchState.dispX = 0;
+                    glitchState.dispY = (Math.random() - 0.5) * 0.15;
+                } else {
+                    // Diagonal
+                    glitchState.dispX = (Math.random() - 0.5) * 0.2;
+                    glitchState.dispY = (Math.random() - 0.5) * 0.12;
+                }
             }
 
             // Base stable state
             let opacity = pulseState.baseOpacity;
             let bloom = pulseState.baseBloom;
             let dispX = 0;
+            let dispY = -2;  // Base Y position
             let scaleX = 1.8;
+            let scaleY = 1.8;
 
             // Apply glitch if active
             if (glitchState.active) {
                 glitchState.flashFrames++;
 
                 // Quick intense flash
-                opacity = 0.6 + Math.random() * 0.4;  // Bright flash
-                bloom = 0.8 + Math.random() * 0.5;
-                dispX = (Math.random() - 0.5) * 0.2;  // Horizontal displacement
-                scaleX = 1.8 + (Math.random() - 0.5) * 0.08;  // Slight scale wobble
+                opacity = 0.7 + Math.random() * 0.3;
+                bloom = 0.9 + Math.random() * 0.4;
+                dispX = glitchState.dispX;
+                dispY = -2 + glitchState.dispY;
+                scaleX = 1.8 + (Math.random() - 0.5) * 0.06;
+                scaleY = 1.8 + (Math.random() - 0.5) * 0.04;
 
                 // End glitch after flash duration
                 if (glitchState.flashFrames >= glitchState.flashDuration) {
                     glitchState.active = false;
                     glitchState.lastGlitch = t;
-                    glitchState.nextGlitch = 2000 + Math.random() * 6000;  // 2-8 seconds until next
+                    glitchState.nextGlitch = 2000 + Math.random() * 6000;
                 }
             }
 
-            // Very subtle base movement (barely noticeable)
-            const subtleWave = Math.sin(t * 0.001) * 0.01;
-
             // Apply to mesh
             headMesh.position.x = dispX;
+            headMesh.position.y = dispY;
             headMesh.scale.x = scaleX;
+            headMesh.scale.y = scaleY;
             occlusionMesh.position.x = dispX;
+            occlusionMesh.position.y = dispY;
             occlusionMesh.scale.x = scaleX;
+            occlusionMesh.scale.y = scaleY;
 
-            wireframeMat.opacity = opacity + subtleWave;
+            wireframeMat.opacity = opacity;
             bloomPass.strength = bloom;
         };
 
