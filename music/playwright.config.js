@@ -1,4 +1,4 @@
-import { defineConfig } from '@playwright/test';
+import { defineConfig, devices } from '@playwright/test';
 
 // Set to true to test against GitHub Pages, false for local testing
 const testRemote = false;
@@ -18,6 +18,14 @@ export default defineConfig({
   },
   retries: 0,
   projects: [
-    { name: 'chromium', use: { browserName: 'chromium' } },
+    {
+      name: 'chromium',
+      use: {
+        ...devices['Desktop Chrome'],
+        launchOptions: {
+          args: ['--autoplay-policy=no-user-gesture-required'],
+        },
+      },
+    },
   ],
 });

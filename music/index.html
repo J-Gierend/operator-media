@@ -1896,6 +1896,7 @@
 <script>
 // Audio Player Management
 const players = {};
+window.players = players;  // Expose for debugging/testing
 const trackIds = ['acid-rain', 'oxbow-b', 'anvil', 'inertia'];
 
 // ========================================
@@ -1903,11 +1904,14 @@ const trackIds = ['acid-rain', 'oxbow-b', 'anvil', 'inertia'];
 // ========================================
 let audioContext = null;
 let analyser = null;
-let audioSource = null;
 let frequencyData = null;
 let animationFrameId = null;
+const audioSources = {};  // Store MediaElementSource per track (can only create once)
 
-function initAudioAnalyser(audio) {
+function initAudioAnalyser(trackId) {
+    const audio = players[trackId];
+    if (!audio) return;
+
     // Create audio context on first interaction (browser requirement)
     if (!audioContext) {
         audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -1915,17 +1919,21 @@ function initAudioAnalyser(audio) {
         analyser.fftSize = 256;  // Fast analysis for beat detection
         analyser.smoothingTimeConstant = 0.3;  // Quick response
         frequencyData = new Uint8Array(analyser.frequencyBinCount);
+        analyser.connect(audioContext.destination);
     }
 
-    // Disconnect previous source if exists
-    if (audioSource) {
-        try { audioSource.disconnect(); } catch(e) {}
+    // Resume audio context if suspended (browser autoplay policy)
+    if (audioContext.state === 'suspended') {
+        audioContext.resume();
     }
 
-    // Connect this audio to the analyser
-    audioSource = audioContext.createMediaElementSource(audio);
-    audioSource.connect(analyser);
-    analyser.connect(audioContext.destination);
+    // Create MediaElementSource only once per audio element
+    if (!audioSources[trackId]) {
+        audioSources[trackId] = audioContext.createMediaElementSource(audio);
+    }
+
+    // Connect this track's source to the analyser
+    audioSources[trackId].connect(analyser);
 
     // Start visualization loop
     startVisualization();
@@ -2333,7 +2341,7 @@ function generateWaveformData(videoId) {
 
 // Initialize waveforms
 function initWaveforms() {
-    videoIds.forEach(id => {
+    trackIds.forEach(id => {
         const waveform = document.getElementById('waveform-' + id);
         const heights = generateWaveformData(id);
         waveformBars[id] = heights;
@@ -2345,6 +2353,7 @@ function initWaveforms() {
 }
 
 // Initialize HTML5 Audio players
+window.initAudioPlayers = initAudioPlayers;  // Expose for testing
 function initAudioPlayers() {
     initWaveforms();
 
@@ -2407,13 +2416,7 @@ function onAudioPlay(trackId) {
     annotationController.start(trackId);
 
     // Initialize audio analyser for beat-reactive visualization
-    const audio = players[trackId];
-    if (audio && !audio._analyserConnected) {
-        initAudioAnalyser(audio);
-        audio._analyserConnected = true;
-    } else {
-        startVisualization();
-    }
+    initAudioAnalyser(trackId);
 }
 
 function onAudioPause(trackId) {
@@ -2569,8 +2572,17 @@ function togglePlay(trackId, button) {
         audio.pause();
         currentlyPlaying = null;
     } else {
-        audio.play();
+        const playPromise = audio.play();
         currentlyPlaying = trackId;
+
+        if (playPromise !== undefined) {
+            playPromise.catch(error => {
+                console.warn('Audio play failed:', error);
+                // Still trigger UI update even if autoplay blocked
+                // This handles test environments and autoplay restrictions
+                onAudioPlay(trackId);
+            });
+        }
     }
 }
 
@@ -2708,7 +2720,7 @@ const operatorBg = {
                 this.content.style.transition = '';
                 console.log('[revealContent] Step 2: Now fading in track text');
 
-                const playingCard = document.querySelector(`[data-video-id="${videoIdForThisReveal}"]`)?.closest('.track-card');
+                const playingCard = document.querySelector(`[data-track-id="${videoIdForThisReveal}"]`)?.closest('.track-card');
                 if (playingCard) {
                     playingCard.classList.remove('text-hidden');
                     console.log('[revealContent] Removed text-hidden from track card');
@@ -2758,7 +2770,7 @@ const operatorBg = {
 
         // Show text on current track
         if (currentlyPlaying) {
-            const playingCard = document.querySelector(`[data-video-id="${currentlyPlaying}"]`)?.closest('.track-card');
+            const playingCard = document.querySelector(`[data-track-id="${currentlyPlaying}"]`)?.closest('.track-card');
             if (playingCard) playingCard.classList.remove('text-hidden');
         }
 
