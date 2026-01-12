@@ -529,7 +529,8 @@
             letter-spacing: 1px;
         }
 
-        .youtube-hidden {
+        /* Hide audio elements */
+        audio {
             position: absolute;
             width: 1px;
             height: 1px;
@@ -1214,9 +1215,9 @@
                     </div>
                 </div>
 
-                <div class="audio-player" data-video-id="evgoa2uVcuE">
+                <div class="audio-player" data-track-id="acid-rain">
                     <div class="player-main">
-                        <button class="play-button" onclick="togglePlay('evgoa2uVcuE', this)">
+                        <button class="play-button" onclick="togglePlay('acid-rain', this)">
                             <svg class="play-icon" viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
                             <svg class="pause-icon" viewBox="0 0 24 24"><rect x="5" y="3" width="4" height="18"/><rect x="15" y="3" width="4" height="18"/></svg>
                         </button>
@@ -1226,13 +1227,13 @@
                         </div>
                     </div>
                     <div class="player-waveform-container">
-                        <div class="waveform" id="waveform-evgoa2uVcuE" onclick="seekTo('evgoa2uVcuE', event)"></div>
+                        <div class="waveform" id="waveform-acid-rain" onclick="seekTo('acid-rain', event)"></div>
                         <div class="time-display">
-                            <span class="time-current" id="time-evgoa2uVcuE">0:00</span>
-                            <span class="time-duration" id="duration-evgoa2uVcuE">--:--</span>
+                            <span class="time-current" id="time-acid-rain">0:00</span>
+                            <span class="time-duration" id="duration-acid-rain">--:--</span>
                         </div>
                     </div>
-                    <div class="youtube-hidden" id="player-evgoa2uVcuE"></div>
+                    <audio id="player-acid-rain" src="audio/acid-rain.m4a" preload="metadata"></audio>
                 </div>
 
                 <div class="track-content">
@@ -1302,9 +1303,9 @@
                     </div>
                 </div>
 
-                <div class="audio-player" data-video-id="mFa3rUm6wtY">
+                <div class="audio-player" data-track-id="oxbow-b">
                     <div class="player-main">
-                        <button class="play-button" onclick="togglePlay('mFa3rUm6wtY', this)">
+                        <button class="play-button" onclick="togglePlay('oxbow-b', this)">
                             <svg class="play-icon" viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
                             <svg class="pause-icon" viewBox="0 0 24 24"><rect x="5" y="3" width="4" height="18"/><rect x="15" y="3" width="4" height="18"/></svg>
                         </button>
@@ -1314,13 +1315,13 @@
                         </div>
                     </div>
                     <div class="player-waveform-container">
-                        <div class="waveform" id="waveform-mFa3rUm6wtY" onclick="seekTo('mFa3rUm6wtY', event)"></div>
+                        <div class="waveform" id="waveform-oxbow-b" onclick="seekTo('oxbow-b', event)"></div>
                         <div class="time-display">
-                            <span class="time-current" id="time-mFa3rUm6wtY">0:00</span>
-                            <span class="time-duration" id="duration-mFa3rUm6wtY">--:--</span>
+                            <span class="time-current" id="time-oxbow-b">0:00</span>
+                            <span class="time-duration" id="duration-oxbow-b">--:--</span>
                         </div>
                     </div>
-                    <div class="youtube-hidden" id="player-mFa3rUm6wtY"></div>
+                    <audio id="player-oxbow-b" src="audio/oxbow-b.m4a" preload="metadata"></audio>
                 </div>
 
                 <div class="track-content">
@@ -1393,9 +1394,9 @@
                     </div>
                 </div>
 
-                <div class="audio-player" data-video-id="CqaAs_3azSs">
+                <div class="audio-player" data-track-id="anvil">
                     <div class="player-main">
-                        <button class="play-button" onclick="togglePlay('CqaAs_3azSs', this)">
+                        <button class="play-button" onclick="togglePlay('anvil', this)">
                             <svg class="play-icon" viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
                             <svg class="pause-icon" viewBox="0 0 24 24"><rect x="5" y="3" width="4" height="18"/><rect x="15" y="3" width="4" height="18"/></svg>
                         </button>
@@ -1405,13 +1406,13 @@
                         </div>
                     </div>
                     <div class="player-waveform-container">
-                        <div class="waveform" id="waveform-CqaAs_3azSs" onclick="seekTo('CqaAs_3azSs', event)"></div>
+                        <div class="waveform" id="waveform-anvil" onclick="seekTo('anvil', event)"></div>
                         <div class="time-display">
-                            <span class="time-current" id="time-CqaAs_3azSs">0:00</span>
-                            <span class="time-duration" id="duration-CqaAs_3azSs">--:--</span>
+                            <span class="time-current" id="time-anvil">0:00</span>
+                            <span class="time-duration" id="duration-anvil">--:--</span>
                         </div>
                     </div>
-                    <div class="youtube-hidden" id="player-CqaAs_3azSs"></div>
+                    <audio id="player-anvil" src="audio/anvil.m4a" preload="metadata"></audio>
                 </div>
 
                 <div class="track-content">
@@ -1484,9 +1485,9 @@
                     </div>
                 </div>
 
-                <div class="audio-player" data-video-id="ZcM4wn_CD3U">
+                <div class="audio-player" data-track-id="inertia">
                     <div class="player-main">
-                        <button class="play-button" onclick="togglePlay('ZcM4wn_CD3U', this)">
+                        <button class="play-button" onclick="togglePlay('inertia', this)">
                             <svg class="play-icon" viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
                             <svg class="pause-icon" viewBox="0 0 24 24"><rect x="5" y="3" width="4" height="18"/><rect x="15" y="3" width="4" height="18"/></svg>
                         </button>
@@ -1496,13 +1497,13 @@
                         </div>
                     </div>
                     <div class="player-waveform-container">
-                        <div class="waveform" id="waveform-ZcM4wn_CD3U" onclick="seekTo('ZcM4wn_CD3U', event)"></div>
+                        <div class="waveform" id="waveform-inertia" onclick="seekTo('inertia', event)"></div>
                         <div class="time-display">
-                            <span class="time-current" id="time-ZcM4wn_CD3U">0:00</span>
-                            <span class="time-duration" id="duration-ZcM4wn_CD3U">--:--</span>
+                            <span class="time-current" id="time-inertia">0:00</span>
+                            <span class="time-duration" id="duration-inertia">--:--</span>
                         </div>
                     </div>
-                    <div class="youtube-hidden" id="player-ZcM4wn_CD3U"></div>
+                    <audio id="player-inertia" src="audio/inertia.m4a" preload="metadata"></audio>
                 </div>
 
                 <div class="track-content">
@@ -1891,11 +1892,10 @@
     </div>
 </footer>
 
-<script src="https://www.youtube.com/iframe_api"></script>
 <script>
-// YouTube Player Management
+// Audio Player Management
 const players = {};
-const videoIds = ['evgoa2uVcuE', 'mFa3rUm6wtY', 'CqaAs_3azSs', 'ZcM4wn_CD3U'];
+const trackIds = ['acid-rain', 'oxbow-b', 'anvil', 'inertia'];
 
 // ========================================
 // LANGUAGE / TRANSLATION SYSTEM
@@ -1984,23 +1984,23 @@ const translations = {
 // Annotations in both languages
 const annotationTranslations = {
     de: {
-        'evgoa2uVcuE': [
+        'acid-rain': [
             [10, "Verwobene Synthesizer-Arpeggio\nTraumartige Qualitaet"],
             [22, "Perkussiver, mechanischer Bass setzt ein"],
             [35, "Industrieller Kolbenmotor-Rhythmus"],
             [55, "Time-Stretching Textur\nZaehfluessig wie Nebel"]
         ],
-        'CqaAs_3azSs': [
+        'anvil': [
             [10, "Mysterioese, schwebende Melodielinie"],
             [25, "Langsame Steigerung Spannungsaufbau"],
             [43, "Definierter Beat mit Uhrmacher-Praezision"]
         ],
-        'ZcM4wn_CD3U': [
+        'inertia': [
             [22, "Maschineller, pulsierender Beat"],
             [35, "Praezise wie ein Schweizer Uhrwerk"],
             [50, "Punchy, direkter Bass"]
         ],
-        'mFa3rUm6wtY': [
+        'oxbow-b': [
             [10, "Leicht bedrohlich aber unique"],
             [26, "Schleppender, mahlender Beat"],
             [50, "Spannung durch Entfernen von Elementen"],
@@ -2009,23 +2009,23 @@ const annotationTranslations = {
         ]
     },
     en: {
-        'evgoa2uVcuE': [
+        'acid-rain': [
             [10, "Interwoven Synthesizer Arpeggio\nDreamlike Quality"],
             [22, "Percussive, mechanical bass enters"],
             [35, "Industrial piston-engine rhythm"],
             [55, "Time-stretching texture\nViscous like fog"]
         ],
-        'CqaAs_3azSs': [
+        'anvil': [
             [10, "Mysterious, floating melody line"],
             [25, "Slow build-up, tension rising"],
             [43, "Defined beat with watchmaker precision"]
         ],
-        'ZcM4wn_CD3U': [
+        'inertia': [
             [22, "Mechanical, pulsating beat"],
             [35, "Precise like a Swiss clockwork"],
             [50, "Punchy, direct bass"]
         ],
-        'mFa3rUm6wtY': [
+        'oxbow-b': [
             [10, "Slightly threatening but unique"],
             [26, "Dragging, grinding beat"],
             [50, "Tension through removing elements"],
@@ -2071,31 +2071,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // BPM for each track (for beat sync)
 const trackBPM = {
-    'evgoa2uVcuE': 112,  // Acid Rain ~56 half-time = 112 full
-    'CqaAs_3azSs': 101,  // Anvil
-    'ZcM4wn_CD3U': 95,   // Inertia
-    'mFa3rUm6wtY': 112   // Oxbow B ~56 half-time = 112 full
+    'acid-rain': 112,
+    'anvil': 101,
+    'inertia': 95,
+    'oxbow-b': 112
 };
 
 // Timed annotations for each track [timestamp in seconds, text]
 const trackAnnotations = {
-    'evgoa2uVcuE': [  // Acid Rain
+    'acid-rain': [
         [10, "Verwobene Synthesizer-Arpeggio\nTraumartige Qualitaet"],
         [22, "Perkussiver, mechanischer Bass setzt ein"],
         [35, "Industrieller Kolbenmotor-Rhythmus"],
         [55, "Time-Stretching Textur\nZaehfluessig wie Nebel"]
     ],
-    'CqaAs_3azSs': [  // Anvil
+    'anvil': [
         [10, "Mysterioese, schwebende Melodielinie"],
         [25, "Langsame Steigerung Spannungsaufbau"],
         [43, "Definierter Beat mit Uhrmacher-Praezision"]
     ],
-    'ZcM4wn_CD3U': [  // Inertia
+    'inertia': [
         [22, "Maschineller, pulsierender Beat"],
         [35, "Praezise wie ein Schweizer Uhrwerk"],
         [50, "Punchy, direkter Bass"]
     ],
-    'mFa3rUm6wtY': [  // Oxbow B
+    'oxbow-b': [
         [10, "Leicht bedrohlich aber unique"],
         [26, "Schleppender, mahlender Beat"],
         [50, "Spannung durch Entfernen von Elementen"],
@@ -2147,10 +2147,10 @@ const annotationController = {
     checkTime() {
         if (!this.currentVideoId || !players[this.currentVideoId]) return;
 
-        const player = players[this.currentVideoId];
-        if (player.getPlayerState && player.getPlayerState() !== 1) return;  // Not playing
+        const audio = players[this.currentVideoId];
+        if (audio.paused) return;  // Not playing
 
-        const currentTime = player.getCurrentTime ? player.getCurrentTime() : 0;
+        const currentTime = audio.currentTime || 0;
         // Use language-aware annotations
         const langAnnotations = annotationTranslations[currentLang] || annotationTranslations['de'];
         const annotations = langAnnotations[this.currentVideoId] || [];
@@ -2234,34 +2234,136 @@ function initWaveforms() {
     });
 }
 
-function onYouTubeIframeAPIReady() {
+// Initialize HTML5 Audio players
+function initAudioPlayers() {
     initWaveforms();
 
-    videoIds.forEach(id => {
-        players[id] = new YT.Player('player-' + id, {
-            height: '1',
-            width: '1',
-            videoId: id,
-            playerVars: {
-                'autoplay': 0,
-                'controls': 0,
-                'disablekb': 1,
-                'fs': 0,
-                'modestbranding': 1,
-                'rel': 0
-            },
-            events: {
-                'onStateChange': onPlayerStateChange,
-                'onReady': onPlayerReady
+    trackIds.forEach(trackId => {
+        const audio = document.getElementById('player-' + trackId);
+        if (!audio) return;
+
+        players[trackId] = audio;
+
+        // Set duration when metadata loads
+        audio.addEventListener('loadedmetadata', () => {
+            document.getElementById('duration-' + trackId).textContent = formatTime(audio.duration);
+        });
+
+        // Handle play event
+        audio.addEventListener('play', () => onAudioPlay(trackId));
+
+        // Handle pause event
+        audio.addEventListener('pause', () => onAudioPause(trackId));
+
+        // Handle ended event
+        audio.addEventListener('ended', () => onAudioEnded(trackId));
+
+        // Handle time update for progress
+        audio.addEventListener('timeupdate', () => {
+            if (currentlyPlaying === trackId) {
+                updateProgressForTrack(trackId);
             }
         });
     });
 }
 
-function onPlayerReady(event) {
-    const videoId = event.target.getVideoData().video_id;
-    const duration = event.target.getDuration();
-    document.getElementById('duration-' + videoId).textContent = formatTime(duration);
+function onAudioPlay(trackId) {
+    const playerDiv = document.querySelector(`[data-track-id="${trackId}"]`);
+    const button = playerDiv.querySelector('.play-button');
+    const status = playerDiv.querySelector('.audio-status');
+    const waveform = document.getElementById('waveform-' + trackId);
+    const timeEl = document.getElementById('time-' + trackId);
+
+    button.classList.add('playing');
+    button.classList.remove('loading');
+    status.textContent = translations[currentLang]['player.playing'];
+    status.classList.add('playing');
+    waveform.classList.add('playing');
+    timeEl.classList.add('playing');
+
+    // Scroll to track card and hide text during animation
+    const trackCard = playerDiv.closest('.track-card');
+    if (trackCard) {
+        trackCard.classList.add('text-hidden');
+        const navHeight = 60;
+        const targetTop = trackCard.getBoundingClientRect().top + window.scrollY - navHeight;
+        window.scrollTo({ top: targetTop, behavior: 'smooth' });
+    }
+
+    // Start Ghost Operator animation
+    operatorBg.start(trackId);
+
+    // Start timed annotations
+    annotationController.start(trackId);
+}
+
+function onAudioPause(trackId) {
+    const playerDiv = document.querySelector(`[data-track-id="${trackId}"]`);
+    if (!playerDiv) return;
+
+    const button = playerDiv.querySelector('.play-button');
+    const status = playerDiv.querySelector('.audio-status');
+    const waveform = document.getElementById('waveform-' + trackId);
+    const timeEl = document.getElementById('time-' + trackId);
+    const audio = players[trackId];
+
+    button.classList.remove('playing');
+    status.textContent = translations[currentLang]['player.click'];
+    status.classList.remove('playing');
+    waveform.classList.remove('playing');
+    timeEl.classList.remove('playing');
+
+    // Reset track to beginning - pause acts like stop
+    audio.currentTime = 0;
+    currentlyPlaying = null;
+
+    // Show text again and reset waveform
+    const trackCard = playerDiv.closest('.track-card');
+    if (trackCard) trackCard.classList.remove('text-hidden');
+    waveform.querySelectorAll('.waveform-bar').forEach(bar => bar.classList.remove('played'));
+    timeEl.textContent = '0:00';
+
+    // Stop Ghost Operator animation and annotations, unlock controls
+    operatorBg.stop();
+    annotationController.stop();
+    unlockControls();
+
+    // Hide overlays
+    if (operatorBg.blackOverlay) operatorBg.blackOverlay.classList.remove('active');
+    if (operatorBg.element) operatorBg.element.classList.remove('active');
+}
+
+function onAudioEnded(trackId) {
+    const playerDiv = document.querySelector(`[data-track-id="${trackId}"]`);
+    if (!playerDiv) return;
+
+    const button = playerDiv.querySelector('.play-button');
+    const status = playerDiv.querySelector('.audio-status');
+    const waveform = document.getElementById('waveform-' + trackId);
+    const timeEl = document.getElementById('time-' + trackId);
+
+    button.classList.remove('playing');
+    status.textContent = translations[currentLang]['player.ended'];
+    status.classList.remove('playing');
+    waveform.classList.remove('playing');
+    timeEl.classList.remove('playing');
+    currentlyPlaying = null;
+
+    // Stop Ghost Operator animation and annotations, unlock controls
+    operatorBg.stop();
+    annotationController.stop();
+    unlockControls();
+
+    // Show text and hide overlays
+    const trackCard = playerDiv.closest('.track-card');
+    if (trackCard) trackCard.classList.remove('text-hidden');
+    if (operatorBg.blackOverlay) operatorBg.blackOverlay.classList.remove('active');
+    if (operatorBg.element) operatorBg.element.classList.remove('active');
+
+    // Reset waveform
+    waveform.querySelectorAll('.waveform-bar').forEach(bar => bar.classList.remove('played'));
+    timeEl.textContent = '0:00';
+    players[trackId].currentTime = 0;
 }
 
 function formatTime(seconds) {
@@ -2271,22 +2373,22 @@ function formatTime(seconds) {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
 }
 
-function updateProgress() {
-    if (!currentlyPlaying) return;
+function updateProgressForTrack(trackId) {
+    const audio = players[trackId];
+    if (!audio) return;
 
-    const player = players[currentlyPlaying];
-    if (!player || !player.getCurrentTime) return;
+    const currentTime = audio.currentTime;
+    const duration = audio.duration;
+    if (!duration || isNaN(duration)) return;
 
-    const currentTime = player.getCurrentTime();
-    const duration = player.getDuration();
     const progress = currentTime / duration;
 
     // Update time display
-    const timeEl = document.getElementById('time-' + currentlyPlaying);
+    const timeEl = document.getElementById('time-' + trackId);
     timeEl.textContent = formatTime(currentTime);
 
     // Update waveform progress
-    const waveform = document.getElementById('waveform-' + currentlyPlaying);
+    const waveform = document.getElementById('waveform-' + trackId);
     const bars = waveform.querySelectorAll('.waveform-bar');
     const progressIndex = Math.floor(progress * bars.length);
 
@@ -2299,147 +2401,55 @@ function updateProgress() {
     });
 }
 
-function onPlayerStateChange(event) {
-    const videoId = event.target.getVideoData().video_id;
-    const playerDiv = document.querySelector(`[data-video-id="${videoId}"]`);
-    const button = playerDiv.querySelector('.play-button');
-    const status = playerDiv.querySelector('.audio-status');
-    const waveform = document.getElementById('waveform-' + videoId);
-    const timeEl = document.getElementById('time-' + videoId);
-
-    if (event.data === YT.PlayerState.PLAYING) {
-        button.classList.add('playing');
-        button.classList.remove('loading');
-        status.textContent = 'Wird abgespielt...';
-        status.classList.add('playing');
-        waveform.classList.add('playing');
-        timeEl.classList.add('playing');
-
-        // Scroll to the track card and hide text during animation
-        const trackCard = playerDiv.closest('.track-card');
-        if (trackCard) {
-            trackCard.classList.add('text-hidden');
-            const navHeight = 60;
-            const targetTop = trackCard.getBoundingClientRect().top + window.scrollY - navHeight;
-            window.scrollTo({ top: targetTop, behavior: 'smooth' });
-        }
-
-        // Start Ghost Operator animation
-        operatorBg.start(videoId);
-
-        // Start timed annotations
-        annotationController.start(videoId);
-
-        // Start progress updates
-        if (updateInterval) clearInterval(updateInterval);
-        updateInterval = setInterval(updateProgress, 250);
-
-    } else if (event.data === YT.PlayerState.PAUSED) {
-        button.classList.remove('playing');
-        status.textContent = 'Klicken zum Abspielen';
-        status.classList.remove('playing');
-        waveform.classList.remove('playing');
-        timeEl.classList.remove('playing');
-
-        // Reset track to beginning - pause acts like stop
-        player.seekTo(0);
-        currentlyPlaying = null;
-
-        // Show text again and reset waveform
-        const trackCard = playerDiv.closest('.track-card');
-        if (trackCard) trackCard.classList.remove('text-hidden');
-        waveform.querySelectorAll('.waveform-bar').forEach(bar => bar.classList.remove('played'));
-        timeEl.textContent = '0:00';
-
-        // Stop Ghost Operator animation and annotations, unlock controls
-        operatorBg.stop();
-        annotationController.stop();
-        unlockControls();
-
-        // Hide overlays
-        if (operatorBg.blackOverlay) operatorBg.blackOverlay.classList.remove('active');
-        if (operatorBg.element) operatorBg.element.classList.remove('active');
-
-        if (updateInterval) clearInterval(updateInterval);
-
-    } else if (event.data === YT.PlayerState.ENDED) {
-        button.classList.remove('playing');
-        status.textContent = 'Beendet - erneut abspielen';
-        status.classList.remove('playing');
-        waveform.classList.remove('playing');
-        timeEl.classList.remove('playing');
-        currentlyPlaying = null;
-
-        // Stop Ghost Operator animation and annotations, unlock controls
-        operatorBg.stop();
-        annotationController.stop();
-        unlockControls();
-
-        // Show text and hide overlays
-        const trackCard = playerDiv.closest('.track-card');
-        if (trackCard) trackCard.classList.remove('text-hidden');
-        if (operatorBg.blackOverlay) operatorBg.blackOverlay.classList.remove('active');
-        if (operatorBg.element) operatorBg.element.classList.remove('active');
-
-        if (updateInterval) clearInterval(updateInterval);
-
-        // Reset waveform
-        waveform.querySelectorAll('.waveform-bar').forEach(bar => bar.classList.remove('played'));
-        timeEl.textContent = '0:00';
-
-    } else if (event.data === YT.PlayerState.BUFFERING) {
-        button.classList.add('loading');
-        status.textContent = 'Laden...';
-    }
-}
-
-function seekTo(videoId, event) {
-    const player = players[videoId];
-    if (!player || !player.getDuration) return;
+function seekTo(trackId, event) {
+    const audio = players[trackId];
+    if (!audio || !audio.duration) return;
 
     const waveform = event.currentTarget;
     const rect = waveform.getBoundingClientRect();
     const clickX = event.clientX - rect.left;
     const progress = clickX / rect.width;
-    const duration = player.getDuration();
 
-    player.seekTo(duration * progress, true);
+    audio.currentTime = audio.duration * progress;
 
     // If not currently playing this track, start it
-    if (currentlyPlaying !== videoId) {
-        togglePlay(videoId, document.querySelector(`[data-video-id="${videoId}"] .play-button`));
+    if (currentlyPlaying !== trackId) {
+        togglePlay(trackId, document.querySelector(`[data-track-id="${trackId}"] .play-button`));
     }
 }
 
-function togglePlay(videoId, button) {
-    const player = players[videoId];
-    if (!player || !player.getPlayerState) {
+function togglePlay(trackId, button) {
+    const audio = players[trackId];
+    if (!audio) {
         button.classList.add('loading');
         return;
     }
 
-    const state = player.getPlayerState();
-
     // Stop any other playing track
-    if (currentlyPlaying && currentlyPlaying !== videoId) {
-        players[currentlyPlaying].pauseVideo();
-        const otherDiv = document.querySelector(`[data-video-id="${currentlyPlaying}"]`);
-        otherDiv.querySelector('.play-button').classList.remove('playing');
-        otherDiv.querySelector('.audio-status').textContent = 'Klicken zum Abspielen';
-        otherDiv.querySelector('.audio-status').classList.remove('playing');
-        document.getElementById('waveform-' + currentlyPlaying).classList.remove('playing');
-        document.getElementById('time-' + currentlyPlaying).classList.remove('playing');
-        // Hide text on previous track card
-        const prevCard = otherDiv.closest('.track-card');
-        if (prevCard) prevCard.classList.add('text-hidden');
+    if (currentlyPlaying && currentlyPlaying !== trackId) {
+        const otherAudio = players[currentlyPlaying];
+        if (otherAudio) {
+            otherAudio.pause();
+            otherAudio.currentTime = 0;
+        }
+        const otherDiv = document.querySelector(`[data-track-id="${currentlyPlaying}"]`);
+        if (otherDiv) {
+            otherDiv.querySelector('.play-button').classList.remove('playing');
+            otherDiv.querySelector('.audio-status').textContent = translations[currentLang]['player.click'];
+            otherDiv.querySelector('.audio-status').classList.remove('playing');
+            document.getElementById('waveform-' + currentlyPlaying).classList.remove('playing');
+            document.getElementById('time-' + currentlyPlaying).classList.remove('playing');
+            const prevCard = otherDiv.closest('.track-card');
+            if (prevCard) prevCard.classList.add('text-hidden');
+        }
     }
 
-    if (state === YT.PlayerState.PLAYING) {
-        player.pauseVideo();
+    if (!audio.paused) {
+        audio.pause();
         currentlyPlaying = null;
     } else {
-        player.playVideo();
-        currentlyPlaying = videoId;
+        audio.play();
+        currentlyPlaying = trackId;
     }
 }
 
@@ -2675,6 +2685,7 @@ window.operatorBg = operatorBg;
 document.addEventListener('DOMContentLoaded', () => {
     operatorBg.init();
     annotationController.init();
+    initAudioPlayers();
 
     // Check fullscreen immediately and on any change
     checkFullscreen();
