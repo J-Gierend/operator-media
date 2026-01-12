@@ -2107,54 +2107,14 @@ const operatorBg = {
     },
 
     start(videoId) {
-        // Find the track element for this video
-        const playerDiv = document.querySelector(`[data-video-id="${videoId}"]`);
-        const trackCard = playerDiv ? playerDiv.closest('.track-card') : null;
-
-        // Scroll to show track at top, below nav (nav is ~50px)
-        // TEMPORARILY DISABLED
-        // if (trackCard) {
-        //     const navHeight = 60;
-        //     const trackTop = trackCard.getBoundingClientRect().top + window.scrollY - navHeight;
-        //     window.scrollTo({ top: trackTop, behavior: 'smooth' });
-        // }
-
-        // Start beat sync
+        // TEMPORARILY DISABLED - ALL ANIMATIONS OFF FOR TIMING WORK
+        // Just start beat sync, nothing else
         const bpm = trackBPM[videoId] || 100;
         if (window.operatorBeat) {
             window.operatorBeat.start(bpm);
         }
-
-        // Clear any existing animation
-        if (this.animationTimeout) {
-            clearTimeout(this.animationTimeout);
-        }
-
-        // Start animation sequence
-        this.isAnimating = true;
-        // document.body.classList.add('animating');  // TEMPORARILY DISABLED
-
-        // Wait for scroll, then start fade sequence
-        setTimeout(() => {
-            // TEMPORARILY DISABLED - uncomment to restore animation
-            // Step 1: Show black overlay and fade out content (5s)
-            // if (this.blackOverlay) this.blackOverlay.classList.add('active');
-            // if (this.content) {
-            //     this.content.classList.remove('content-reveal');
-            //     this.content.style.opacity = '';
-            //     this.content.classList.add('content-glitch');
-            // }
-
-            // Step 2: Fade in face (no black overlay for now)
-            setTimeout(() => {
-                if (this.element) this.element.classList.add('active');
-            }, 1000);  // Quick fade in so you can see timing
-
-            // Step 3: After ~1 minute, fade content back in (can still read while music plays)
-            this.animationTimeout = setTimeout(() => {
-                this.revealContent();
-            }, 70000);  // ~1 minute face time (6s black + 64s face)
-        }, 800);
+        // Show face immediately without any content hiding
+        if (this.element) this.element.classList.add('active');
     },
 
     revealContent() {
