@@ -36,6 +36,15 @@
 
         html {
             scroll-behavior: smooth;
+            overflow-y: scroll;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        html::-webkit-scrollbar {
+            display: none;
+            width: 0;
+            height: 0;
         }
 
         body {
@@ -44,7 +53,43 @@
             color: var(--text-primary);
             line-height: 1.8;
             min-height: 100vh;
-            font-size: 18px; /* Base size for readability */
+            font-size: 18px;
+            overflow-y: scroll;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        body::-webkit-scrollbar {
+            display: none;
+            width: 0;
+            height: 0;
+        }
+
+        *::-webkit-scrollbar {
+            display: none;
+            width: 0;
+            height: 0;
+        }
+
+        /* Locked state during animation - no user interaction, no scrolling */
+        html.animation-locked,
+        body.animation-locked {
+            overflow: hidden !important;
+            touch-action: none !important;
+        }
+
+        body.animation-locked main,
+        body.animation-locked nav,
+        body.animation-locked footer,
+        body.animation-locked .play-button,
+        body.animation-locked .nav-links,
+        body.animation-locked a {
+            pointer-events: none !important;
+        }
+
+        /* First section needs top padding since hero is removed */
+        #referenzen {
+            padding-top: 100px;
         }
 
         /* CRT Scanlines */
@@ -146,30 +191,18 @@
             text-shadow: 0 0 10px var(--green-primary);
         }
 
-        /* Hero Section */
+        /* Hero Section - Minimal */
         .hero {
-            padding: 160px 0 100px;
+            padding: 100px 0 60px;
             text-align: center;
             position: relative;
         }
 
-        .hero-label {
-            font-size: 14px;
-            letter-spacing: 6px;
-            text-transform: uppercase;
-            color: var(--green-dim);
-            margin-bottom: 24px;
-            display: inline-block;
-            padding: 12px 24px;
-            border: 1px solid var(--green-border);
-            background: rgba(17, 68, 17, 0.2);
-        }
-
         .hero h1 {
-            font-size: clamp(40px, 6vw, 64px);
+            font-size: clamp(48px, 8vw, 80px);
             font-weight: normal;
-            letter-spacing: 10px;
-            margin-bottom: 24px;
+            letter-spacing: 15px;
+            margin-bottom: 20px;
             color: var(--green-bright);
             text-transform: uppercase;
             text-shadow: 0 0 10px var(--green-primary), 0 0 30px var(--green-dim), 0 0 50px rgba(0, 255, 0, 0.3);
@@ -177,35 +210,12 @@
         }
 
         .hero-subtitle {
-            font-size: 18px;
+            font-size: 16px;
             color: var(--green-dim);
             max-width: 700px;
-            margin: 0 auto 40px;
-            letter-spacing: 2px;
-        }
-
-        .genre-tags {
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .genre-tag {
-            font-size: 14px;
-            padding: 10px 18px;
-            background: transparent;
-            border: 1px solid var(--green-border);
-            color: var(--green-dark);
-            letter-spacing: 2px;
+            margin: 0 auto;
+            letter-spacing: 3px;
             text-transform: uppercase;
-            transition: all 0.3s;
-        }
-
-        .genre-tag:hover {
-            border-color: var(--green-primary);
-            color: var(--green-primary);
-            box-shadow: 0 0 15px rgba(51, 204, 51, 0.3);
         }
 
         /* Section Styling */
@@ -496,6 +506,18 @@
 
         .track-content {
             padding: 28px 32px;
+        }
+
+        /* Text inside track-content - fades in/out without resizing the box */
+        .track-content > * {
+            opacity: 1;
+            transition: opacity 5s ease-out;
+        }
+
+        /* When track is playing, hide the text (but box stays full size) */
+        .track-card.text-hidden .track-content > * {
+            opacity: 0;
+            transition: opacity 0.5s ease-out;
         }
 
         .track-section {
@@ -833,7 +855,7 @@
             overflow: hidden;
         }
 
-        /* Black overlay that appears during animation */
+        /* LAYER 1: Black overlay - darkens background */
         #black-overlay {
             position: fixed;
             top: 0;
@@ -841,7 +863,7 @@
             right: 0;
             bottom: 0;
             background: #000000;
-            z-index: 500;
+            z-index: 5;
             opacity: 0;
             pointer-events: none;
             transition: opacity 3s ease-in-out;
@@ -851,7 +873,7 @@
             opacity: 1;
         }
 
-        /* Operator Face Background - Large, face visible */
+        /* LAYER 2: Operator Face - above black overlay */
         #operator-bg {
             position: fixed;
             top: 50%;
@@ -859,7 +881,7 @@
             transform: translate(-50%, -50%);
             width: 250vmin;
             height: 250vmin;
-            z-index: 501;
+            z-index: 10;
             pointer-events: none;
             opacity: 0;
             transition: opacity 8s ease-in-out;
@@ -869,13 +891,13 @@
             opacity: 1;
         }
 
-        /* Music Annotations - floating text over operator face */
+        /* LAYER 3: Music Annotations - above face */
         #music-annotation {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            z-index: 502;
+            z-index: 50;
             pointer-events: none;
             opacity: 0;
             transition: opacity 1.5s ease-in-out;
@@ -891,15 +913,18 @@
 
         #music-annotation .annotation-text {
             font-family: 'IBM Plex Mono', monospace;
-            font-size: 5vw;
+            font-size: clamp(16px, 2.5vw, 32px);
             color: var(--green);
-            text-shadow: 0 0 30px var(--green), 0 0 60px rgba(0, 255, 65, 0.4);
-            line-height: 1.4;
+            text-shadow: 0 0 20px var(--green), 0 0 40px rgba(0, 255, 65, 0.3);
+            line-height: 1.5;
             letter-spacing: 0.02em;
             border: 2px solid rgba(0, 255, 65, 0.4);
             background: #000;
-            padding: 40px 50px;
+            padding: 25px 35px;
             position: relative;
+            white-space: pre-line;
+            word-break: keep-all;
+            overflow-wrap: normal;
         }
 
         #music-annotation .annotation-text::before {
@@ -919,61 +944,65 @@
             pointer-events: none;
         }
 
-        /* Fullscreen Hint Popup */
+        /* Fullscreen Requirement Overlay - MANDATORY */
         #fullscreen-hint {
             position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 1000;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #000;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s ease-out;
+        }
+
+        #fullscreen-hint.hidden {
             opacity: 0;
-            transition: opacity 0.5s ease-in-out;
             pointer-events: none;
         }
 
-        #fullscreen-hint.visible {
-            opacity: 1;
-            pointer-events: auto;
+        #fullscreen-hint .hint-content {
+            background: #fff;
+            padding: 60px 80px;
+            text-align: center;
+            max-width: 600px;
         }
 
-        #fullscreen-hint .hint-content {
-            background: #000;
-            border: 1px solid var(--green);
-            padding: 20px 30px;
-            text-align: center;
-            box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+        #fullscreen-hint .hint-title {
+            font-family: 'Consolas', 'Lucida Console', monospace;
+            font-size: 1.2rem;
+            color: #000;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
         }
 
         #fullscreen-hint .hint-text {
-            font-family: 'IBM Plex Mono', monospace;
+            font-family: 'Consolas', 'Lucida Console', monospace;
             font-size: 1rem;
-            color: var(--green);
-            margin-bottom: 10px;
+            color: #333;
+            margin-bottom: 40px;
+            line-height: 1.8;
         }
 
         #fullscreen-hint .hint-key {
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 2rem;
+            font-family: 'Consolas', 'Lucida Console', monospace;
+            font-size: 3rem;
             font-weight: bold;
-            color: var(--green);
-            text-shadow: 0 0 10px var(--green);
-            margin-bottom: 15px;
-        }
-
-        #fullscreen-hint .hint-dismiss {
-            background: transparent;
-            border: 1px solid var(--green);
-            color: var(--green);
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 0.9rem;
-            padding: 8px 20px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        #fullscreen-hint .hint-dismiss:hover {
-            background: var(--green);
             color: #000;
+            padding: 20px 50px;
+            border: 3px solid #000;
+            display: inline-block;
+            margin-bottom: 30px;
+        }
+
+        #fullscreen-hint .hint-subtext {
+            font-family: 'Consolas', 'Lucida Console', monospace;
+            font-size: 0.85rem;
+            color: #666;
         }
 
         /* Ensure content is above face with backdrop */
@@ -982,8 +1011,10 @@
             z-index: 1;
         }
 
-        /* Backdrop for content so face doesn't overwrite text */
+        /* LAYER 4: Main content - TOP layer when visible */
         main {
+            position: relative;
+            z-index: 100;
             background: rgba(5, 5, 5, 0.85);
             backdrop-filter: blur(2px);
         }
@@ -1016,14 +1047,14 @@
             background: rgba(5, 5, 5, 0.7);
         }
 
-        /* Text fade effect when music starts - TEMPORARILY DISABLED */
+        /* Text fade effect when music starts */
         .content-glitch {
-            /* animation: textFadeOut 5s ease-out forwards; */
+            animation: textFadeOut 5s ease-out forwards;
         }
 
         .content-reveal {
-            /* animation: textFadeIn 3s ease-out forwards; */
-            /* opacity: 0; */
+            animation: textFadeIn 3s ease-out forwards;
+            opacity: 0;
         }
 
         @keyframes textFadeOut {
@@ -1060,12 +1091,17 @@
         <div class="annotation-text"></div>
     </div>
 
-    <!-- Fullscreen Hint -->
+    <!-- Fullscreen Requirement Overlay -->
     <div id="fullscreen-hint">
         <div class="hint-content">
-            <div class="hint-text">Fuer das beste Erlebnis: Vollbild-Modus</div>
+            <div class="hint-title">Vollbild erforderlich</div>
+            <div class="hint-text">
+                Diese Seite muss im Vollbild-Modus<br>
+                betrachtet werden.<br><br>
+                Empfohlen: Full HD Display (1920x1080)
+            </div>
             <div class="hint-key">F11</div>
-            <button class="hint-dismiss" onclick="dismissFullscreenHint()">Verstanden</button>
+            <div class="hint-subtext">Druecken Sie F11 um fortzufahren</div>
         </div>
     </div>
 
@@ -1074,49 +1110,27 @@
         <div class="nav-brand">[OPERATOR] // AUDIO_BRIEF</div>
         <div class="nav-links">
             <a href="#track-1">01 Acid Rain</a>
-            <a href="#track-2">02 Anvil</a>
-            <a href="#track-3">03 Inertia</a>
-            <a href="#track-4">04 Oxbow B</a>
+            <a href="#track-2">02 Oxbow B</a>
+            <a href="#track-3">03 Anvil</a>
+            <a href="#track-4">04 Inertia</a>
             <a href="#produktion">Produktion</a>
             <a href="#zusammenfassung">Brief</a>
         </div>
     </div>
 </nav>
 
-<header class="hero">
-    <div class="container">
-        <div class="hero-label">Werbe-Soundtrack Brief</div>
-        <h1>Im Stil von LORN</h1>
-        <p class="hero-subtitle">
-            Marcos Ortega — Milwaukee, Wisconsin<br>
-            Dunkle elektronische Klanglandschaften mit cinematischer Tiefe
-        </p>
-        <div class="genre-tags">
-            <span class="genre-tag">Dark Electronic</span>
-            <span class="genre-tag">Industrial Synthwave</span>
-            <span class="genre-tag">Cinematic IDM</span>
-            <span class="genre-tag">Dystopian Ambient</span>
-        </div>
-    </div>
-</header>
-
 <main>
     <!-- Reference Tracks Section -->
     <section id="referenzen">
         <div class="container">
-            <div class="section-header">
-                <div class="section-label">01 — Referenz-Tracks</div>
-                <h2 class="section-title">Vier Tracks, die den Sound definieren</h2>
-            </div>
 
             <!-- Track 1: Acid Rain -->
-            <article class="track-card" id="track-1">
+            <article class="track-card text-hidden" id="track-1">
                 <div class="track-header">
                     <div class="track-number">Track 01</div>
                     <h3 class="track-title">Acid Rain</h3>
                     <div class="track-meta">
                         <span class="track-meta-item">Album: <span>Ask The Dust (2012)</span></span>
-                        <span class="track-meta-item">Label: <span>Ninja Tune</span></span>
                     </div>
                 </div>
 
@@ -1198,14 +1212,104 @@
                 </div>
             </article>
 
-            <!-- Track 2: Anvil -->
-            <article class="track-card" id="track-2">
+            <!-- Track 2: Oxbow B -->
+            <article class="track-card text-hidden" id="track-2">
                 <div class="track-header">
                     <div class="track-number">Track 02</div>
+                    <h3 class="track-title">Oxbow B</h3>
+                    <div class="track-meta">
+                        <span class="track-meta-item">Album: <span>The Maze to Nowhere (2014)</span></span>
+                    </div>
+                </div>
+
+                <div class="audio-player" data-video-id="mFa3rUm6wtY">
+                    <div class="player-main">
+                        <button class="play-button" onclick="togglePlay('mFa3rUm6wtY', this)">
+                            <svg class="play-icon" viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+                            <svg class="pause-icon" viewBox="0 0 24 24"><rect x="5" y="3" width="4" height="18"/><rect x="15" y="3" width="4" height="18"/></svg>
+                        </button>
+                        <div class="audio-info">
+                            <div class="audio-status">Klicken zum Abspielen</div>
+                            <div class="audio-title">Oxbow B</div>
+                        </div>
+                    </div>
+                    <div class="player-waveform-container">
+                        <div class="waveform" id="waveform-mFa3rUm6wtY" onclick="seekTo('mFa3rUm6wtY', event)"></div>
+                        <div class="time-display">
+                            <span class="time-current" id="time-mFa3rUm6wtY">0:00</span>
+                            <span class="time-duration" id="duration-mFa3rUm6wtY">--:--</span>
+                        </div>
+                    </div>
+                    <div class="youtube-hidden" id="player-mFa3rUm6wtY"></div>
+                </div>
+
+                <div class="track-content">
+                    <div class="specs-grid">
+                        <div class="spec-item">
+                            <div class="spec-label">BPM</div>
+                            <div class="spec-value">~112 (HT 56)</div>
+                        </div>
+                        <div class="spec-item">
+                            <div class="spec-label">Tonart</div>
+                            <div class="spec-value">C#/Db Major</div>
+                        </div>
+                        <div class="spec-item">
+                            <div class="spec-label">Feel</div>
+                            <div class="spec-value">Evolutiv</div>
+                        </div>
+                        <div class="spec-item">
+                            <div class="spec-label">Charakter</div>
+                            <div class="spec-value">Sinister</div>
+                        </div>
+                    </div>
+
+                    <div class="track-section">
+                        <div class="track-section-title">Klangliche Beschreibung</div>
+                        <p>
+                            Leicht bedrohlich, aber <strong>unique statt furchterregend</strong> — wie die Begegnung
+                            mit einer unbekannten Lebensform. Der Beat ist <strong>plodding und grinding</strong>
+                            (schleppend, mahlend), die Basslines growlen und komprimieren sich in unerwarteten Momenten.
+                        </p>
+                        <p style="margin-top: 12px;">
+                            Hochfrequente <strong>"Bloops"</strong> (kurze, glitchy Sounds) tauchen überraschend auf,
+                            wie Signale aus einer anderen Dimension. Der Track <strong>mutiert über seine Laufzeit</strong> —
+                            er entwickelt sich wie ein lebender Organismus, wird progressiv dunkler.
+                        </p>
+                    </div>
+
+                    <div class="track-section">
+                        <div class="track-section-title">Sound-Design im Detail</div>
+                        <p>
+                            <strong>Bassline-Verhalten:</strong> Nicht statisch — die Basslines strecken und komprimieren
+                            sich zeitlich, manipulieren unsere Zeitwahrnehmung. <strong>Layering:</strong> Foley-Sounds
+                            (Feldaufnahmen, Found Sounds) gemischt mit synthetischen Elementen für organische Unreinheit.
+                        </p>
+                        <div class="highlight-box">
+                            <p>
+                                LORN beschreibt seinen Ansatz: Beginne mit Drums oder Melodie, und entwickle,
+                                bis sich alles notwendig anfühlt — oder eben nicht.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="track-section">
+                        <div class="track-section-title">Stimmung & Einsatz</div>
+                        <p>
+                            Cinematisch, sinister — eine <strong>"persönliche Tour durch unbekanntes Territorium"</strong>.
+                            Für Szenen, die das Neue, Unentdeckte, leicht Bedrohliche aber Faszinierende darstellen.
+                            Nicht Horror, sondern die Spannung vor der Entdeckung.
+                        </p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Track 3: Anvil -->
+            <article class="track-card text-hidden" id="track-3">
+                <div class="track-header">
+                    <div class="track-number">Track 03</div>
                     <h3 class="track-title">Anvil</h3>
                     <div class="track-meta">
                         <span class="track-meta-item">Album: <span>Vessel (2015)</span></span>
-                        <span class="track-meta-item">Label: <span>Wednesday Sound</span></span>
                     </div>
                 </div>
 
@@ -1284,20 +1388,19 @@
                         <p>
                             Dystopisch, futuristisch — der Soundtrack einer <strong>Cyberpunk-Stadtlandschaft bei Nacht</strong>.
                             Perfekt für Tech-Intros, futuristische Produktpräsentationen oder Szenen, die das Unbekannte
-                            faszinierend statt furchterregend darstellen sollen.
+                            unique statt furchterregend darstellen sollen.
                         </p>
                     </div>
                 </div>
             </article>
 
-            <!-- Track 3: Inertia -->
-            <article class="track-card" id="track-3">
+            <!-- Track 4: Inertia -->
+            <article class="track-card text-hidden" id="track-4">
                 <div class="track-header">
-                    <div class="track-number">Track 03</div>
+                    <div class="track-number">Track 04</div>
                     <h3 class="track-title">Inertia</h3>
                     <div class="track-meta">
                         <span class="track-meta-item">Album: <span>DROWN THE TRAITOR WITHIN (2019)</span></span>
-                        <span class="track-meta-item">Label: <span>Self-Released</span></span>
                     </div>
                 </div>
 
@@ -1377,98 +1480,6 @@
                             Dunkel aber tanzbar, melancholisch aber energetisch. Perfekt für <strong>Main-Intros,
                             Produkt-Reveals</strong> oder Szenen, die Präzision und technische Überlegenheit
                             kommunizieren sollen. Hat Drive, ohne aggressiv zu werden.
-                        </p>
-                    </div>
-                </div>
-            </article>
-
-            <!-- Track 4: Oxbow B -->
-            <article class="track-card" id="track-4">
-                <div class="track-header">
-                    <div class="track-number">Track 04</div>
-                    <h3 class="track-title">Oxbow B</h3>
-                    <div class="track-meta">
-                        <span class="track-meta-item">Album: <span>The Maze to Nowhere (2014)</span></span>
-                        <span class="track-meta-item">Feel: <span>Half-Time @ 56 BPM</span></span>
-                    </div>
-                </div>
-
-                <div class="audio-player" data-video-id="mFa3rUm6wtY">
-                    <div class="player-main">
-                        <button class="play-button" onclick="togglePlay('mFa3rUm6wtY', this)">
-                            <svg class="play-icon" viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
-                            <svg class="pause-icon" viewBox="0 0 24 24"><rect x="5" y="3" width="4" height="18"/><rect x="15" y="3" width="4" height="18"/></svg>
-                        </button>
-                        <div class="audio-info">
-                            <div class="audio-status">Klicken zum Abspielen</div>
-                            <div class="audio-title">Oxbow B</div>
-                        </div>
-                    </div>
-                    <div class="player-waveform-container">
-                        <div class="waveform" id="waveform-mFa3rUm6wtY" onclick="seekTo('mFa3rUm6wtY', event)"></div>
-                        <div class="time-display">
-                            <span class="time-current" id="time-mFa3rUm6wtY">0:00</span>
-                            <span class="time-duration" id="duration-mFa3rUm6wtY">--:--</span>
-                        </div>
-                    </div>
-                    <div class="youtube-hidden" id="player-mFa3rUm6wtY"></div>
-                </div>
-
-                <div class="track-content">
-                    <div class="specs-grid">
-                        <div class="spec-item">
-                            <div class="spec-label">BPM</div>
-                            <div class="spec-value">~112 (HT 56)</div>
-                        </div>
-                        <div class="spec-item">
-                            <div class="spec-label">Tonart</div>
-                            <div class="spec-value">C#/Db Major</div>
-                        </div>
-                        <div class="spec-item">
-                            <div class="spec-label">Feel</div>
-                            <div class="spec-value">Evolutiv</div>
-                        </div>
-                        <div class="spec-item">
-                            <div class="spec-label">Charakter</div>
-                            <div class="spec-value">Sinister</div>
-                        </div>
-                    </div>
-
-                    <div class="track-section">
-                        <div class="track-section-title">Klangliche Beschreibung</div>
-                        <p>
-                            Leicht bedrohlich, aber <strong>faszinierend statt furchterregend</strong> — wie die Begegnung
-                            mit einer unbekannten Lebensform. Der Beat ist <strong>plodding und grinding</strong>
-                            (schleppend, mahlend), die Basslines growlen und komprimieren sich in unerwarteten Momenten.
-                        </p>
-                        <p style="margin-top: 12px;">
-                            Hochfrequente <strong>"Bloops"</strong> (kurze, glitchy Sounds) tauchen überraschend auf,
-                            wie Signale aus einer anderen Dimension. Der Track <strong>mutiert über seine Laufzeit</strong> —
-                            er entwickelt sich wie ein lebender Organismus, wird progressiv dunkler.
-                        </p>
-                    </div>
-
-                    <div class="track-section">
-                        <div class="track-section-title">Sound-Design im Detail</div>
-                        <p>
-                            <strong>Bassline-Verhalten:</strong> Nicht statisch — die Basslines strecken und komprimieren
-                            sich zeitlich, manipulieren unsere Zeitwahrnehmung. <strong>Layering:</strong> Foley-Sounds
-                            (Feldaufnahmen, Found Sounds) gemischt mit synthetischen Elementen für organische Unreinheit.
-                        </p>
-                        <div class="highlight-box">
-                            <p>
-                                LORN beschreibt seinen Ansatz: Beginne mit Drums oder Melodie, und entwickle,
-                                bis sich alles notwendig anfühlt — oder eben nicht.
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="track-section">
-                        <div class="track-section-title">Stimmung & Einsatz</div>
-                        <p>
-                            Cinematisch, sinister — eine <strong>"persönliche Tour durch unbekanntes Territorium"</strong>.
-                            Für Szenen, die das Neue, Unentdeckte, leicht Bedrohliche aber Faszinierende darstellen.
-                            Nicht Horror, sondern die Spannung vor der Entdeckung.
                         </p>
                     </div>
                 </div>
@@ -1682,58 +1693,112 @@
     <section id="zusammenfassung" style="background: var(--bg-secondary);">
         <div class="container">
             <div class="section-header">
-                <div class="section-label">04 — Zusammenfassung</div>
-                <h2 class="section-title">Der Brief für den Musiker</h2>
+                <div class="section-label">04 — Erfolgskriterien</div>
+                <h2 class="section-title">Was der Track braucht</h2>
             </div>
 
-            <div class="summary-box">
-                <h3>Kurzversion zum Weitergeben</h3>
+            <!-- SUCCESS CRITERIA: What MUST be there -->
+            <div class="production-grid" style="margin-bottom: 48px;">
+                <div class="production-card" style="border-color: rgba(0, 255, 65, 0.4);">
+                    <h3 class="production-card-title">
+                        <span class="production-card-icon" style="color: var(--green);">✓</span>
+                        Sound & Stil
+                    </h3>
+                    <ul class="production-list">
+                        <li><strong>Industrial-Synthwave</strong> mit Ambient-DNA (LORN-Stil)</li>
+                        <li><strong>Cinematische Tiefe</strong> — mysteriös und futuristisch</li>
+                        <li><strong>Analoge Wärme</strong> — Tape-Sättigung, Transformer-Sound</li>
+                        <li><strong>Texturale Melodien</strong> — keine Pop-Hooks, atmosphärisch</li>
+                    </ul>
+                </div>
+
+                <div class="production-card" style="border-color: rgba(0, 255, 65, 0.4);">
+                    <h3 class="production-card-title">
+                        <span class="production-card-icon" style="color: var(--green);">✓</span>
+                        Rhythmus & Low-End
+                    </h3>
+                    <ul class="production-list">
+                        <li><strong>Punchy, tight Kick & Bass</strong> — präsent aber nicht überladen</li>
+                        <li><strong>Mechanische Grooves</strong> — maschinenhaft, industriell</li>
+                        <li><strong>Half-Time Feels</strong> — für Schwere und Gewicht</li>
+                        <li><strong>Minimalistisch mit Persönlichkeit</strong> — weniger ist mehr</li>
+                    </ul>
+                </div>
+
+                <div class="production-card" style="border-color: rgba(0, 255, 65, 0.4);">
+                    <h3 class="production-card-title">
+                        <span class="production-card-icon" style="color: var(--green);">✓</span>
+                        Produktion & Effekte
+                    </h3>
+                    <ul class="production-list">
+                        <li><strong>Viel Reverb & Delay</strong> — Raum und Tiefe</li>
+                        <li><strong>Glitches & Filter-Sweeps</strong> — kontrollierte Modulationen</li>
+                        <li><strong>Automationen</strong> — konstante Bewegung im Mix</li>
+                        <li><strong>Dynamik</strong> — Ambient-Parts vs. druckvolle Sections</li>
+                    </ul>
+                </div>
+
+                <div class="production-card" style="border-color: rgba(0, 255, 65, 0.4);">
+                    <h3 class="production-card-title">
+                        <span class="production-card-icon" style="color: var(--green);">✓</span>
+                        Stimmung & Entwicklung
+                    </h3>
+                    <ul class="production-list">
+                        <li><strong>Faszinierend, nicht gruselig</strong> — Spannung ohne Horror</li>
+                        <li><strong>Organische Entwicklung</strong> — Track mutiert wie ein Lebewesen</li>
+                        <li><strong>Dystopisch-futuristisch</strong> — Cyberpunk-Atmosphäre</li>
+                        <li><strong>Unbekanntes erforschen</strong> — Entdeckung, nicht Angst</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- ANTI-CRITERIA: What must NOT be there -->
+            <div class="section-header" style="margin-top: 48px;">
+                <h2 class="section-title" style="color: rgba(239, 68, 68, 0.8);">Was der Track NICHT braucht</h2>
+            </div>
+
+            <div class="production-grid">
+                <div class="production-card" style="border-color: rgba(239, 68, 68, 0.4);">
+                    <h3 class="production-card-title">
+                        <span class="production-card-icon" style="color: rgba(239, 68, 68, 0.8);">✗</span>
+                        Vermeiden
+                    </h3>
+                    <ul class="production-list">
+                        <li><strong>Kein Horror</strong> — Spannung ja, Jump-Scares nein</li>
+                        <li><strong>Nicht überladen</strong> — jedes Element braucht seinen Platz</li>
+                        <li><strong>Nicht generisch</strong> — Charakter vor Konvention</li>
+                        <li><strong>Nicht chaotisch</strong> — kontrollierte Energie</li>
+                        <li><strong>Keine Pop-Hooks</strong> — texturale statt eingängige Melodien</li>
+                        <li><strong>Nicht zu schnell</strong> — Tracks brauchen Zeit sich zu entwickeln</li>
+                    </ul>
+                </div>
+
+                <div class="production-card" style="border-color: rgba(239, 68, 68, 0.4);">
+                    <h3 class="production-card-title">
+                        <span class="production-card-icon" style="color: rgba(239, 68, 68, 0.8);">✗</span>
+                        Red Flags
+                    </h3>
+                    <ul class="production-list">
+                        <li><strong>Zu sauberer Sound</strong> — braucht analoge Unreinheiten</li>
+                        <li><strong>Preset-Sounds</strong> — eigener Charakter ist Pflicht</li>
+                        <li><strong>Vorhersehbare Strukturen</strong> — darf überraschen</li>
+                        <li><strong>Zu viel passiert</strong> — Stille und Raum sind wichtig</li>
+                        <li><strong>Standard-Drops</strong> — organische Übergänge bevorzugt</li>
+                        <li><strong>Klischee-Synthwave</strong> — keine 80er-Retrowave-Clichés</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Quick copy section -->
+            <div class="summary-box" style="margin-top: 48px;">
+                <h3>Referenz-Tracks</h3>
                 <div class="summary-content">
                     <p>
-                        <strong>Stil:</strong> Industrial-Synthwave mit Ambient-DNA im Stil von LORN (Marcos Ortega, Milwaukee).
-                        Dark Electronic mit cinematischer Tiefe — mysteriös und futuristisch, aber nicht Horror.
-                    </p>
-                    <p>
-                        <strong>Low-End & Rhythmus:</strong> Punchy, tight Kick & Bass — präsent im Mix, aber nicht überladen.
-                        Mechanische, maschinenartige Grooves mit industriellem Character. Der Beat darf minimalistisch sein,
-                        muss aber Persönlichkeit haben. Half-Time-Feels für Schwere und Gewicht.
-                    </p>
-                    <p>
-                        <strong>Melodie & Harmonie:</strong> Simple, repetitive Melodielinien — weniger ist mehr.
-                        Darf schwebend/dissonant sein (Spannung aufbauen). Texturale Melodien statt Pop-Hooks.
-                        Interessante Tonfolgen, die sich langsam entwickeln.
-                    </p>
-                    <p>
-                        <strong>Produktion & Sound-Design:</strong> Viel Reverb & Delay für Raum und Tiefe.
-                        Tape-Sättigung für warmen, analogen Charakter. Glitches, Filter-Sweeps, Modulationen.
-                        Automationen auf Effekten für konstante Bewegung. Dynamik: Ruhige Ambient-Parts vs. druckvolle Beat-Sections.
-                    </p>
-                    <p>
-                        <strong>Stimmung:</strong> Wie eine unbekannte Lebensform, die faszinierend ist —
-                        leicht ominös, aber nicht gruselig. Die Tracks sollen sich entwickeln wie lebende Organismen.
-                        Dystopisch, futuristisch, cinematisch.
-                    </p>
-                    <p>
-                        <strong>Referenzen:</strong> Die 4 Tracks oben (Acid Rain, Anvil,
-                        Inertia, Oxbow B) definieren den gewünschten Sound-Raum. Bitte durchhören.
+                        Die 4 Tracks oben (Acid Rain, Oxbow B, Anvil, Inertia) definieren den gewünschten Sound-Raum.
+                        Diese sind das Ziel — bitte durchhören und den Vibe verinnerlichen.
                     </p>
                 </div>
-                <button class="copy-button" onclick="copyBrief()">Brief kopieren</button>
-            </div>
-
-            <!-- What it should NOT be -->
-            <div style="margin-top: 48px;">
-                <h3 style="font-size: 18px; margin-bottom: 20px;">Was es NICHT sein soll</h3>
-                <div class="production-grid">
-                    <div class="production-card" style="border-color: rgba(239, 68, 68, 0.3);">
-                        <ul class="production-list">
-                            <li><strong>Nicht Horror</strong> — Spannung ja, Jump-Scares nein</li>
-                            <li><strong>Nicht überladen</strong> — Jedes Element braucht seinen Platz</li>
-                            <li><strong>Nicht generisch</strong> — Charakter vor Konvention</li>
-                            <li><strong>Nicht chaotisch</strong> — Kontrollierte Energie</li>
-                        </ul>
-                    </div>
-                </div>
+                <button class="copy-button" onclick="copyBrief()">Kriterien kopieren</button>
             </div>
 
         </div>
@@ -1750,7 +1815,7 @@
 <script>
 // YouTube Player Management
 const players = {};
-const videoIds = ['evgoa2uVcuE', 'CqaAs_3azSs', 'ZcM4wn_CD3U', 'mFa3rUm6wtY'];
+const videoIds = ['evgoa2uVcuE', 'mFa3rUm6wtY', 'CqaAs_3azSs', 'ZcM4wn_CD3U'];
 
 // BPM for each track (for beat sync)
 const trackBPM = {
@@ -1763,29 +1828,27 @@ const trackBPM = {
 // Timed annotations for each track [timestamp in seconds, text]
 const trackAnnotations = {
     'evgoa2uVcuE': [  // Acid Rain
-        [0, "Verwobene Synthesizer-Arpeggio\nTraumartige Qualitaet"],
+        [10, "Verwobene Synthesizer-Arpeggio\nTraumartige Qualitaet"],
         [22, "Perkussiver, mechanischer Bass setzt ein"],
-        [45, "Industrieller Kolbenmotor-Rhythmus"],
-        [90, "Time-Stretching Textur\nZaehfluessig wie Nebel"]
+        [35, "Industrieller Kolbenmotor-Rhythmus"],
+        [55, "Time-Stretching Textur\nZaehfluessig wie Nebel"]
     ],
     'CqaAs_3azSs': [  // Anvil
-        [0, "Mysterioese, schwebende Melodielinie"],
-        [20, "Lichter in einer nebligen Stadtlandschaft"],
-        [45, "Definierter Beat mit Uhrmacher-Praezision"],
-        [80, "Cinematischer Pluck\nReverb-schwere Pads"]
+        [10, "Mysterioese, schwebende Melodielinie"],
+        [25, "Langsame Steigerung Spannungsaufbau"],
+        [43, "Definierter Beat mit Uhrmacher-Praezision"]
     ],
     'ZcM4wn_CD3U': [  // Inertia
-        [0, "Maschineller, pulsierender Beat"],
-        [22, "Praezise wie ein Schweizer Uhrwerk"],
-        [50, "Punchy, direkter Bass"],
-        [90, "Melodie im Wandel\nFilter-Sweeps, Delay-Throws"]
+        [22, "Maschineller, pulsierender Beat"],
+        [35, "Praezise wie ein Schweizer Uhrwerk"],
+        [50, "Punchy, direkter Bass"]
     ],
     'mFa3rUm6wtY': [  // Oxbow B
-        [0, "Bedrohlich aber faszinierend"],
-        [25, "Schleppender, mahlender Beat"],
-        [60, "Basslines growlen und komprimieren"],
-        [100, "Glitchy Bloops\nSignale aus anderer Dimension"],
-        [150, "Track mutiert\nWird progressiv dunkler"]
+        [10, "Leicht bedrohlich aber unique"],
+        [26, "Schleppender, mahlender Beat"],
+        [50, "Spannung durch Entfernen von Elementen"],
+        [61, "Growlender Bass mit Kompression"],
+        [95, "Track mutiert / progressiv"]
     ]
 };
 
@@ -1796,6 +1859,7 @@ const annotationController = {
     currentVideoId: null,
     currentIndex: -1,
     checkInterval: null,
+    revealTimeout: null,
     displayDuration: 10000,  // Show each annotation for 10 seconds
 
     init() {
@@ -1807,6 +1871,7 @@ const annotationController = {
         this.currentVideoId = videoId;
         this.currentIndex = -1;
         this.hide();
+        if (this.revealTimeout) clearTimeout(this.revealTimeout);
 
         // Check time every 500ms
         if (this.checkInterval) clearInterval(this.checkInterval);
@@ -1817,6 +1882,10 @@ const annotationController = {
         if (this.checkInterval) {
             clearInterval(this.checkInterval);
             this.checkInterval = null;
+        }
+        if (this.revealTimeout) {
+            clearTimeout(this.revealTimeout);
+            this.revealTimeout = null;
         }
         this.hide();
         this.currentVideoId = null;
@@ -1846,12 +1915,26 @@ const annotationController = {
             this.currentIndex = targetIndex;
             this.show(annotations[targetIndex][1]);
 
+            // Clear any pending reveal
+            if (this.revealTimeout) clearTimeout(this.revealTimeout);
+
             // Auto-hide after duration
             setTimeout(() => {
                 if (this.currentIndex === targetIndex) {
                     this.hide();
                 }
             }, this.displayDuration);
+
+            // If this is the last annotation, fade content back in after 10 seconds
+            const isLastAnnotation = targetIndex === annotations.length - 1;
+            console.log('[annotation] Showing annotation', targetIndex + 1, 'of', annotations.length, '- isLast:', isLastAnnotation);
+            if (isLastAnnotation) {
+                console.log('[annotation] Last annotation! Setting revealTimeout for', this.displayDuration, 'ms');
+                this.revealTimeout = setTimeout(() => {
+                    console.log('[annotation] revealTimeout fired, calling operatorBg.revealContent()');
+                    operatorBg.revealContent();
+                }, this.displayDuration);
+            }
         }
     },
 
@@ -1978,6 +2061,15 @@ function onPlayerStateChange(event) {
         waveform.classList.add('playing');
         timeEl.classList.add('playing');
 
+        // Scroll to the track card and hide text during animation
+        const trackCard = playerDiv.closest('.track-card');
+        if (trackCard) {
+            trackCard.classList.add('text-hidden');
+            const navHeight = 60;
+            const targetTop = trackCard.getBoundingClientRect().top + window.scrollY - navHeight;
+            window.scrollTo({ top: targetTop, behavior: 'smooth' });
+        }
+
         // Start Ghost Operator animation
         operatorBg.start(videoId);
 
@@ -1990,14 +2082,29 @@ function onPlayerStateChange(event) {
 
     } else if (event.data === YT.PlayerState.PAUSED) {
         button.classList.remove('playing');
-        status.textContent = 'Pausiert';
+        status.textContent = 'Klicken zum Abspielen';
         status.classList.remove('playing');
         waveform.classList.remove('playing');
         timeEl.classList.remove('playing');
 
-        // Stop Ghost Operator animation and annotations
+        // Reset track to beginning - pause acts like stop
+        player.seekTo(0);
+        currentlyPlaying = null;
+
+        // Show text again and reset waveform
+        const trackCard = playerDiv.closest('.track-card');
+        if (trackCard) trackCard.classList.remove('text-hidden');
+        waveform.querySelectorAll('.waveform-bar').forEach(bar => bar.classList.remove('played'));
+        timeEl.textContent = '0:00';
+
+        // Stop Ghost Operator animation and annotations, unlock controls
         operatorBg.stop();
         annotationController.stop();
+        unlockControls();
+
+        // Hide overlays
+        if (operatorBg.blackOverlay) operatorBg.blackOverlay.classList.remove('active');
+        if (operatorBg.element) operatorBg.element.classList.remove('active');
 
         if (updateInterval) clearInterval(updateInterval);
 
@@ -2009,9 +2116,16 @@ function onPlayerStateChange(event) {
         timeEl.classList.remove('playing');
         currentlyPlaying = null;
 
-        // Stop Ghost Operator animation and annotations
+        // Stop Ghost Operator animation and annotations, unlock controls
         operatorBg.stop();
         annotationController.stop();
+        unlockControls();
+
+        // Show text and hide overlays
+        const trackCard = playerDiv.closest('.track-card');
+        if (trackCard) trackCard.classList.remove('text-hidden');
+        if (operatorBg.blackOverlay) operatorBg.blackOverlay.classList.remove('active');
+        if (operatorBg.element) operatorBg.element.classList.remove('active');
 
         if (updateInterval) clearInterval(updateInterval);
 
@@ -2061,6 +2175,9 @@ function togglePlay(videoId, button) {
         otherDiv.querySelector('.audio-status').classList.remove('playing');
         document.getElementById('waveform-' + currentlyPlaying).classList.remove('playing');
         document.getElementById('time-' + currentlyPlaying).classList.remove('playing');
+        // Hide text on previous track card
+        const prevCard = otherDiv.closest('.track-card');
+        if (prevCard) prevCard.classList.add('text-hidden');
     }
 
     if (state === YT.PlayerState.PLAYING) {
@@ -2070,6 +2187,13 @@ function togglePlay(videoId, button) {
         player.playVideo();
         currentlyPlaying = videoId;
     }
+}
+
+// Helper to unlock controls
+function unlockControls() {
+    document.documentElement.classList.remove('animation-locked');
+    document.body.classList.remove('animation-locked');
+    document.body.classList.remove('animating');
 }
 
 // ========================================
@@ -2107,30 +2231,107 @@ const operatorBg = {
     },
 
     start(videoId) {
-        // TEMPORARILY DISABLED - ALL ANIMATIONS OFF FOR TIMING WORK
-        // Just start beat sync, nothing else
+        this.isAnimating = true;
+
+        // Lock all user interaction during animation (both html and body for scroll lock)
+        document.documentElement.classList.add('animation-locked');
+        document.body.classList.add('animation-locked');
+        document.body.classList.add('animating');
+
+        // Start beat sync
         const bpm = trackBPM[videoId] || 100;
         if (window.operatorBeat) {
             window.operatorBeat.start(bpm);
         }
-        // Show face immediately without any content hiding
-        if (this.element) this.element.classList.add('active');
+
+        // Fade out content - clear any inline styles and force animation restart
+        if (this.content) {
+            // Remove classes and clear inline styles
+            this.content.classList.remove('content-glitch');
+            this.content.classList.remove('content-reveal');
+            this.content.style.opacity = '';
+            this.content.style.transition = '';
+            this.content.style.animation = '';
+
+            // Force reflow to restart animation
+            void this.content.offsetHeight;
+
+            // Now add the fade-out animation
+            this.content.classList.add('content-glitch');
+        }
+
+        // Show black overlay after content starts fading
+        setTimeout(() => {
+            if (this.blackOverlay) this.blackOverlay.classList.add('active');
+        }, 2000);
+
+        // Show operator face
+        setTimeout(() => {
+            if (this.element) this.element.classList.add('active');
+        }, 3000);
+
+        // Content reveal is now handled by annotationController after last annotation
     },
 
     revealContent() {
+        console.log('[revealContent] Called, this.content:', this.content);
+        console.log('[revealContent] blackOverlay:', this.blackOverlay, 'hasActive:', this.blackOverlay?.classList.contains('active'));
+
         // Hide black overlay
-        if (this.blackOverlay) this.blackOverlay.classList.remove('active');
+        if (this.blackOverlay) {
+            this.blackOverlay.classList.remove('active');
+            console.log('[revealContent] Removed active from blackOverlay');
+        }
         document.body.classList.remove('animating');
 
         if (this.content) {
-            this.content.classList.remove('content-glitch');
-            this.content.classList.add('content-reveal');
+            const cs = getComputedStyle(this.content);
+            console.log('[revealContent] Content state:', {
+                opacity: cs.opacity,
+                visibility: cs.visibility,
+                display: cs.display,
+                zIndex: cs.zIndex,
+                hasGlitchClass: this.content.classList.contains('content-glitch'),
+                inlineStyle: this.content.style.cssText
+            });
 
+            // Clear all animation classes and styles
+            this.content.classList.remove('content-glitch');
+            this.content.classList.remove('content-reveal');
+            this.content.style.animation = 'none';
+
+            // Step 1: Slow fade content back in (5 seconds)
+            this.content.style.opacity = '0';
+            this.content.style.transition = 'opacity 5s ease-out';
+
+            // Trigger reflow then fade in
+            void this.content.offsetHeight;
+            this.content.style.opacity = '1';
+
+            console.log('[revealContent] Step 1: Content fading in over 5s');
+
+            // Step 2: After content fade completes, fade in the text (5 more seconds)
             setTimeout(() => {
-                this.content.classList.remove('content-reveal');
-                this.content.style.opacity = '1';
-                this.isAnimating = false;
-            }, 3500);
+                this.content.style.transition = '';
+                console.log('[revealContent] Step 2: Now fading in track text');
+
+                if (currentlyPlaying) {
+                    const playingCard = document.querySelector(`[data-video-id="${currentlyPlaying}"]`)?.closest('.track-card');
+                    if (playingCard) {
+                        playingCard.classList.remove('text-hidden');
+                        console.log('[revealContent] Removed text-hidden from track card');
+                    }
+                }
+
+                // Mark animation complete after text fade (5s) - then unlock controls
+                setTimeout(() => {
+                    this.isAnimating = false;
+                    unlockControls();
+                    console.log('[revealContent] Complete. Controls unlocked.');
+                }, 5000);
+            }, 5500);
+        } else {
+            console.log('[revealContent] ERROR: this.content is null/undefined!');
         }
     },
 
@@ -2141,15 +2342,28 @@ const operatorBg = {
             this.animationTimeout = null;
         }
 
-        // Hide black overlay and restore scrollbar
-        if (this.blackOverlay) this.blackOverlay.classList.remove('active');
-        document.body.classList.remove('animating');
+        // Cancel annotation reveal timeout
+        if (annotationController.revealTimeout) {
+            clearTimeout(annotationController.revealTimeout);
+            annotationController.revealTimeout = null;
+        }
 
-        // Immediately reveal content
+        // Hide black overlay and unlock controls
+        if (this.blackOverlay) this.blackOverlay.classList.remove('active');
+        unlockControls();
+
+        // Immediately reveal content - force override CSS animation
         if (this.content) {
             this.content.classList.remove('content-glitch');
             this.content.classList.remove('content-reveal');
+            this.content.style.animation = 'none';
             this.content.style.opacity = '1';
+        }
+
+        // Show text on current track
+        if (currentlyPlaying) {
+            const playingCard = document.querySelector(`[data-video-id="${currentlyPlaying}"]`)?.closest('.track-card');
+            if (playingCard) playingCard.classList.remove('text-hidden');
         }
 
         this.isAnimating = false;
@@ -2163,41 +2377,47 @@ const operatorBg = {
     }
 };
 
-// Fullscreen hint
-let fullscreenHintDismissed = false;
+// Fullscreen requirement - MANDATORY (desktop only)
+function isMobile() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+           (window.innerWidth <= 768);
+}
 
 function isFullscreen() {
     return window.innerHeight === screen.height ||
            document.fullscreenElement ||
-           document.webkitFullscreenElement;
+           document.webkitFullscreenElement ||
+           document.mozFullScreenElement ||
+           document.msFullscreenElement;
 }
 
 function checkFullscreen() {
-    if (fullscreenHintDismissed) return;
     const hint = document.getElementById('fullscreen-hint');
     if (!hint) return;
 
-    if (isFullscreen()) {
-        hint.classList.remove('visible');
+    // Skip fullscreen requirement on mobile - let them view directly
+    if (isMobile() || isFullscreen()) {
+        hint.classList.add('hidden');
     } else {
-        hint.classList.add('visible');
+        hint.classList.remove('hidden');
     }
 }
 
-function dismissFullscreenHint() {
-    fullscreenHintDismissed = true;
-    const hint = document.getElementById('fullscreen-hint');
-    if (hint) hint.classList.remove('visible');
-}
+// Expose to window for testing
+window.operatorBg = operatorBg;
 
 // Initialize on load
 document.addEventListener('DOMContentLoaded', () => {
     operatorBg.init();
     annotationController.init();
 
-    // Check fullscreen after a short delay
-    setTimeout(checkFullscreen, 2000);
+    // Check fullscreen immediately and on any change
+    checkFullscreen();
     window.addEventListener('resize', checkFullscreen);
+    document.addEventListener('fullscreenchange', checkFullscreen);
+    document.addEventListener('webkitfullscreenchange', checkFullscreen);
+    document.addEventListener('mozfullscreenchange', checkFullscreen);
+    document.addEventListener('MSFullscreenChange', checkFullscreen);
 
     // Scroll reveals content if it's faded out
     let lastScrollY = window.scrollY;
@@ -2221,7 +2441,7 @@ Melodie & Harmonie: Simple, repetitive Melodielinien — weniger ist mehr. Textu
 
 Produktion & Sound-Design: Viel Reverb & Delay für Raum und Tiefe. Tape-Sättigung für warmen, analogen Charakter. Glitches, Filter-Sweeps, Modulationen. Automationen auf Effekten für konstante Bewegung.
 
-Stimmung: Wie eine unbekannte Lebensform, die faszinierend ist — leicht ominös, aber nicht gruselig. Die Tracks sollen sich entwickeln wie lebende Organismen. Dystopisch, futuristisch, cinematisch.
+Stimmung: Wie eine unbekannte Lebensform, die unique ist — leicht ominös, aber nicht gruselig. Die Tracks sollen sich entwickeln wie lebende Organismen. Dystopisch, futuristisch, cinematisch.
 
 Referenz-Tracks:
 1. Lorn - Acid Rain: https://youtube.com/watch?v=evgoa2uVcuE

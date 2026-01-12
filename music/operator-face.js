@@ -151,6 +151,7 @@ class OperatorFace extends HTMLElement {
         composer.addPass(new OutputPass());
 
         // Resize handler - update renderer when container size changes
+        const baseWidth = this.width;
         const handleResize = () => {
             const rect = this.container.getBoundingClientRect();
             if (rect.width > 0 && rect.height > 0) {
@@ -160,6 +161,9 @@ class OperatorFace extends HTMLElement {
                 camera.updateProjectionMatrix();
                 renderer.setSize(this.width, this.height);
                 composer.setSize(this.width, this.height);
+                // Scale bloom for larger resolutions to maintain glow visibility
+                const scale = Math.max(1, this.width / baseWidth);
+                bloomPass.radius = 1.0 * scale;
                 bloomPass.resolution.set(this.width, this.height);
             }
         };
@@ -191,12 +195,18 @@ class OperatorFace extends HTMLElement {
             rangeY: 0.09       // Subtle turn
         };
 
-        // Slow zoom in/out - very gradual, cinematic
+        // Organic zoom with multiple overlapping waves - range 30-45
         const zoomMove = {
-            phase: Math.PI / 2,  // Start zoomed out
-            speed: 0.00002,      // Very slow zoom (long cycle)
-            baseZ: 25,           // Start further out
-            range: 4             // Zoom between 21 and 29
+            phase1: Math.PI / 2,  // Start zoomed out
+            phase2: Math.random() * Math.PI * 2,
+            phase3: Math.random() * Math.PI * 2,
+            speed1: 0.00008,      // ~78 second primary cycle
+            speed2: 0.00013,      // ~48 second secondary cycle
+            speed3: 0.00021,      // ~30 second tertiary pulse
+            baseZ: 37.5,          // Center point
+            range1: 5.5,          // Primary range (32-43)
+            range2: 1.5,          // Secondary variation
+            range3: 0.5           // Subtle pulse
         };
 
         // Subtle camera drift - like you're slightly shifting weight while watching
@@ -291,10 +301,10 @@ class OperatorFace extends HTMLElement {
             }
         };
 
-        // Glitch state - ultra quick flash then pause
+        // Glitch state - DISABLED (distracting while listening to music)
         const glitchState = {
             lastGlitch: 0,
-            nextGlitch: 3000 + Math.random() * 5000,  // Random 3-8 seconds between glitches
+            nextGlitch: Infinity,  // Never glitch
             active: false,
             flashFrames: 0,
             flashDuration: 0,
@@ -341,13 +351,13 @@ class OperatorFace extends HTMLElement {
             if (glitchState.active) {
                 glitchState.flashFrames++;
 
-                // Quick intense flash
-                opacity = 0.7 + Math.random() * 0.3;
-                bloom = 0.9 + Math.random() * 0.4;
-                dispX = glitchState.dispX;
-                dispY = -2 + glitchState.dispY;
-                scaleX = 1.8 + (Math.random() - 0.5) * 0.06;
-                scaleY = 1.8 + (Math.random() - 0.5) * 0.04;
+                // Subtle glitch - slight dimming and shift, not bright flash
+                opacity = pulseState.baseOpacity * (0.4 + Math.random() * 0.3);  // Dim to 40-70%
+                bloom = 0.25 + Math.random() * 0.15;  // Subtle bloom
+                dispX = glitchState.dispX * 0.5;  // Reduce displacement
+                dispY = -2 + glitchState.dispY * 0.5;
+                scaleX = 1.8 + (Math.random() - 0.5) * 0.02;  // Minimal scale change
+                scaleY = 1.8 + (Math.random() - 0.5) * 0.02;
 
                 // End glitch after flash duration
                 if (glitchState.flashFrames >= glitchState.flashDuration) {
@@ -414,8 +424,11 @@ class OperatorFace extends HTMLElement {
             const posY = 0.5 + Math.sin(t * camMove.speedY + camMove.phaseY) * camMove.rangeY
                        + Math.sin(t * camMove.speedY * 0.7 + camMove.phaseY * 1.2) * camMove.rangeY * 0.15;
 
-            // Slow zoom in/out
-            const posZ = zoomMove.baseZ + Math.sin(t * zoomMove.speed + zoomMove.phase) * zoomMove.range;
+            // Organic zoom with multiple overlapping waves
+            const posZ = zoomMove.baseZ
+                + Math.sin(t * zoomMove.speed1 + zoomMove.phase1) * zoomMove.range1
+                + Math.sin(t * zoomMove.speed2 + zoomMove.phase2) * zoomMove.range2
+                + Math.sin(t * zoomMove.speed3 + zoomMove.phase3) * zoomMove.range3;
 
             const lookX = Math.sin(t * camMove.speedLookX + camMove.phaseLookX) * camMove.rangeLookX;
             const lookY = Math.sin(t * camMove.speedLookY + camMove.phaseLookY) * camMove.rangeLookY;

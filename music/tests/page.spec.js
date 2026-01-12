@@ -121,4 +121,60 @@ test.describe('OPERATOR Music Page', () => {
     console.log('Body overflow during animation:', bodyOverflow);
   });
 
+  test('revealContent should fade content back in', async ({ page }) => {
+    const main = page.locator('main');
+
+    // First, simulate content being faded out (like after playing)
+    // Need to set animation to none to allow inline opacity to work
+    await page.evaluate(() => {
+      const m = document.querySelector('main');
+      if (m) {
+        m.style.animation = 'none';
+        m.style.opacity = '0';
+        m.classList.add('content-glitch');
+      }
+    });
+
+    // Verify content is hidden
+    let opacity = await main.evaluate(el => getComputedStyle(el).opacity);
+    expect(opacity).toBe('0');
+
+    // Call revealContent directly
+    const revealCalled = await page.evaluate(() => {
+      if (window.operatorBg && typeof window.operatorBg.revealContent === 'function') {
+        window.operatorBg.revealContent();
+        return true;
+      }
+      return false;
+    });
+
+    expect(revealCalled).toBe(true);
+
+    // Wait for the transition (5 seconds + buffer)
+    await page.waitForTimeout(6000);
+
+    // Content should be visible again
+    opacity = await main.evaluate(el => getComputedStyle(el).opacity);
+    expect(opacity).toBe('1');
+
+    console.log('[PASS] revealContent fades content back in');
+  });
+
+  test('operatorBg.content is properly initialized', async ({ page }) => {
+    // Debug: Check operatorBg.content is set
+    const contentExists = await page.evaluate(() => {
+      return {
+        operatorBgExists: !!window.operatorBg,
+        contentExists: !!window.operatorBg?.content,
+        contentTagName: window.operatorBg?.content?.tagName
+      };
+    });
+    console.log('Debug - operatorBg state:', contentExists);
+    expect(contentExists.operatorBgExists).toBe(true);
+    expect(contentExists.contentExists).toBe(true);
+    expect(contentExists.contentTagName).toBe('MAIN');
+
+    console.log('[PASS] operatorBg.content is properly initialized');
+  });
+
 });
