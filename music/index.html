@@ -191,6 +191,40 @@
             text-shadow: 0 0 10px var(--green-primary);
         }
 
+        /* Language Toggle */
+        .lang-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: 30px;
+            font-size: 14px;
+            letter-spacing: 2px;
+        }
+
+        .lang-toggle button {
+            background: transparent;
+            border: 1px solid var(--green-dark);
+            color: var(--green-dim);
+            padding: 6px 12px;
+            font-family: inherit;
+            font-size: 14px;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .lang-toggle button:hover {
+            border-color: var(--green-primary);
+            color: var(--green-primary);
+        }
+
+        .lang-toggle button.active {
+            background: var(--green-primary);
+            border-color: var(--green-primary);
+            color: #000;
+            text-shadow: none;
+        }
+
         /* Hero Section - Minimal */
         .hero {
             padding: 100px 0 60px;
@@ -1136,14 +1170,14 @@
     <!-- Fullscreen Requirement Overlay -->
     <div id="fullscreen-hint">
         <div class="hint-content">
-            <div class="hint-title">Vollbild erforderlich</div>
-            <div class="hint-text">
+            <div class="hint-title" data-i18n="fullscreen.title">Vollbild erforderlich</div>
+            <div class="hint-text" data-i18n="fullscreen.text">
                 Diese Seite muss im Vollbild-Modus<br>
                 betrachtet werden.<br><br>
                 Empfohlen: Full HD Display (1920x1080)
             </div>
             <div class="hint-key">F11</div>
-            <div class="hint-subtext">Druecken Sie F11 um fortzufahren</div>
+            <div class="hint-subtext" data-i18n="fullscreen.subtext">Druecken Sie F11 um fortzufahren</div>
         </div>
     </div>
 
@@ -1155,8 +1189,12 @@
             <a href="#track-2">02 Oxbow B</a>
             <a href="#track-3">03 Anvil</a>
             <a href="#track-4">04 Inertia</a>
-            <a href="#produktion">Produktion</a>
-            <a href="#zusammenfassung">Brief</a>
+            <a href="#produktion" data-i18n="nav.production">Produktion</a>
+            <a href="#zusammenfassung" data-i18n="nav.brief">Brief</a>
+            <div class="lang-toggle">
+                <button id="lang-de" class="active" onclick="setLanguage('de')">DE</button>
+                <button id="lang-en" onclick="setLanguage('en')">EN</button>
+            </div>
         </div>
     </div>
 </nav>
@@ -1218,7 +1256,7 @@
                     </div>
 
                     <div class="track-section">
-                        <div class="track-section-title">Klangliche Beschreibung</div>
+                        <div class="track-section-title" data-i18n="section.sound">Klangliche Beschreibung</div>
                         <p>
                             Der Track eröffnet mit einer <strong>verwobenen, instabilen Synthesizer-Arpeggio-Linie</strong>,
                             die durch analoge Bandsättigung eine traumartige, fast unterwasserartige Qualität erhält.
@@ -1234,7 +1272,7 @@
                     </div>
 
                     <div class="track-section">
-                        <div class="track-section-title">Produktionstechnik (Direkt von LORN)</div>
+                        <div class="track-section-title" data-i18n="section.production">Produktionstechnik (Direkt von LORN)</div>
                         <p>
                             <strong>Synth-Stack:</strong> Mehrere Layer eines Custom-Patches auf dem <em>Oberheim Matrix 6</em>,
                             durch <em>¼" Analog-Tape</em> geführt und anschließend durch den <em>Thermionic Culture Vulture</em>
@@ -1244,7 +1282,7 @@
                     </div>
 
                     <div class="track-section">
-                        <div class="track-section-title">Stimmung & Einsatz</div>
+                        <div class="track-section-title" data-i18n="section.mood">Stimmung & Einsatz</div>
                         <p>
                             Melancholisch, hypnotisch, langsam entfaltend. Ideal für <strong>introspektive Momente</strong>,
                             Übergänge oder Szenen, die eine gewisse Schwere und Tiefe transportieren sollen — ohne dabei
@@ -1306,7 +1344,7 @@
                     </div>
 
                     <div class="track-section">
-                        <div class="track-section-title">Klangliche Beschreibung</div>
+                        <div class="track-section-title" data-i18n="section.sound">Klangliche Beschreibung</div>
                         <p>
                             Leicht bedrohlich, aber <strong>unique statt furchterregend</strong> — wie die Begegnung
                             mit einer unbekannten Lebensform. Der Beat ist <strong>plodding und grinding</strong>
@@ -1320,7 +1358,7 @@
                     </div>
 
                     <div class="track-section">
-                        <div class="track-section-title">Sound-Design im Detail</div>
+                        <div class="track-section-title" data-i18n="section.sounddesign">Sound-Design im Detail</div>
                         <p>
                             <strong>Bassline-Verhalten:</strong> Nicht statisch — die Basslines strecken und komprimieren
                             sich zeitlich, manipulieren unsere Zeitwahrnehmung. <strong>Layering:</strong> Foley-Sounds
@@ -1335,7 +1373,7 @@
                     </div>
 
                     <div class="track-section">
-                        <div class="track-section-title">Stimmung & Einsatz</div>
+                        <div class="track-section-title" data-i18n="section.mood">Stimmung & Einsatz</div>
                         <p>
                             Cinematisch, sinister — eine <strong>"persönliche Tour durch unbekanntes Territorium"</strong>.
                             Für Szenen, die das Neue, Unentdeckte, leicht Bedrohliche aber Faszinierende darstellen.
@@ -1397,7 +1435,7 @@
                     </div>
 
                     <div class="track-section">
-                        <div class="track-section-title">Klangliche Beschreibung</div>
+                        <div class="track-section-title" data-i18n="section.sound">Klangliche Beschreibung</div>
                         <p>
                             Der Einstieg präsentiert eine <strong>mysteriöse, schwebende Melodielinie</strong> — nicht dissonant
                             genug für Horror, aber unsicher genug, um Spannung zu erzeugen. Die Effekte (primär Hall und subtile
@@ -1411,7 +1449,7 @@
                     </div>
 
                     <div class="track-section">
-                        <div class="track-section-title">Sound-Design-Elemente</div>
+                        <div class="track-section-title" data-i18n="section.elements">Sound-Design-Elemente</div>
                         <p>
                             <strong>Lead-Sound:</strong> Cinematischer Pluck mit langem Decay, eingebettet in reverb-schwere Pads.
                             Die Melodie folgt keinen Pop-Konventionen — sie ist eher <strong>texturell als harmonisch</strong>,
@@ -1426,7 +1464,7 @@
                     </div>
 
                     <div class="track-section">
-                        <div class="track-section-title">Stimmung & Einsatz</div>
+                        <div class="track-section-title" data-i18n="section.mood">Stimmung & Einsatz</div>
                         <p>
                             Dystopisch, futuristisch — der Soundtrack einer <strong>Cyberpunk-Stadtlandschaft bei Nacht</strong>.
                             Perfekt für Tech-Intros, futuristische Produktpräsentationen oder Szenen, die das Unbekannte
@@ -1488,7 +1526,7 @@
                     </div>
 
                     <div class="track-section">
-                        <div class="track-section-title">Klangliche Beschreibung</div>
+                        <div class="track-section-title" data-i18n="section.sound">Klangliche Beschreibung</div>
                         <p>
                             Ab 0:22 etabliert sich ein <strong>maschineller, pulsierender Beat</strong> — präzise wie
                             ein Schweizer Uhrwerk, aber mit organischer Wärme durch analoge Sättigung. Der Bass ist
@@ -1502,7 +1540,7 @@
                     </div>
 
                     <div class="track-section">
-                        <div class="track-section-title">Rhythmus-Analyse</div>
+                        <div class="track-section-title" data-i18n="section.rhythm">Rhythmus-Analyse</div>
                         <p>
                             <strong>Kick-Platzierung:</strong> Straight, aber mit subtilen Velocity-Variationen für
                             menschlicheres Feel. <strong>Snare/Clap:</strong> Tight, mit kurzem, kontrollierten Reverb.
@@ -1517,7 +1555,7 @@
                     </div>
 
                     <div class="track-section">
-                        <div class="track-section-title">Stimmung & Einsatz</div>
+                        <div class="track-section-title" data-i18n="section.mood">Stimmung & Einsatz</div>
                         <p>
                             Dunkel aber tanzbar, melancholisch aber energetisch. Perfekt für <strong>Main-Intros,
                             Produkt-Reveals</strong> oder Szenen, die Präzision und technische Überlegenheit
@@ -1534,8 +1572,8 @@
     <section id="produktion" style="background: var(--bg-secondary);">
         <div class="container">
             <div class="section-header">
-                <div class="section-label">02 — Der LORN-Sound</div>
-                <h2 class="section-title">Equipment, Signalkette & Philosophie</h2>
+                <div class="section-label" data-i18n="prod.label">02 — Der LORN-Sound</div>
+                <h2 class="section-title" data-i18n="prod.title">Equipment, Signalkette & Philosophie</h2>
             </div>
 
             <div class="production-grid">
@@ -1600,8 +1638,8 @@
     <section id="techniken">
         <div class="container">
             <div class="section-header">
-                <div class="section-label">03 — Produktionstechniken</div>
-                <h2 class="section-title">Was den Sound einzigartig macht</h2>
+                <div class="section-label" data-i18n="tech.label">03 — Produktionstechniken</div>
+                <h2 class="section-title" data-i18n="tech.title">Was den Sound einzigartig macht</h2>
             </div>
 
             <div class="technique-section">
@@ -1735,8 +1773,8 @@
     <section id="zusammenfassung" style="background: var(--bg-secondary);">
         <div class="container">
             <div class="section-header">
-                <div class="section-label">04 — Erfolgskriterien</div>
-                <h2 class="section-title">Was der Track braucht</h2>
+                <div class="section-label" data-i18n="summary.label">04 — Erfolgskriterien</div>
+                <h2 class="section-title" data-i18n="summary.title">Was der Track braucht</h2>
             </div>
 
             <!-- SUCCESS CRITERIA: What MUST be there -->
@@ -1833,14 +1871,14 @@
 
             <!-- Quick copy section -->
             <div class="summary-box" style="margin-top: 48px;">
-                <h3>Referenz-Tracks</h3>
+                <h3 data-i18n="summary.box">Referenz-Tracks</h3>
                 <div class="summary-content">
                     <p>
                         Die 4 Tracks oben (Acid Rain, Oxbow B, Anvil, Inertia) definieren den gewünschten Sound-Raum.
                         Diese sind das Ziel — bitte durchhören und den Vibe verinnerlichen.
                     </p>
                 </div>
-                <button class="copy-button" onclick="copyBrief()">Kriterien kopieren</button>
+                <button class="copy-button" onclick="copyBrief()" data-i18n="summary.copy">Kriterien kopieren</button>
             </div>
 
         </div>
@@ -1858,6 +1896,178 @@
 // YouTube Player Management
 const players = {};
 const videoIds = ['evgoa2uVcuE', 'mFa3rUm6wtY', 'CqaAs_3azSs', 'ZcM4wn_CD3U'];
+
+// ========================================
+// LANGUAGE / TRANSLATION SYSTEM
+// ========================================
+let currentLang = 'de';
+
+const translations = {
+    de: {
+        // Fullscreen overlay
+        'fullscreen.title': 'Vollbild erforderlich',
+        'fullscreen.text': 'Diese Seite muss im Vollbild-Modus<br>betrachtet werden.<br><br>Empfohlen: Full HD Display (1920x1080)',
+        'fullscreen.subtext': 'Druecken Sie F11 um fortzufahren',
+        // Nav
+        'nav.production': 'Produktion',
+        'nav.brief': 'Brief',
+        // Audio player
+        'player.click': 'Klicken zum Abspielen',
+        'player.playing': 'Wird abgespielt...',
+        'player.paused': 'Pausiert',
+        'player.ended': 'Beendet - erneut abspielen',
+        'player.loading': 'Laden...',
+        // Section titles
+        'section.sound': 'Klangliche Beschreibung',
+        'section.production': 'Produktionstechnik (Direkt von LORN)',
+        'section.mood': 'Stimmung & Einsatz',
+        'section.sounddesign': 'Sound-Design im Detail',
+        'section.elements': 'Sound-Design-Elemente',
+        'section.rhythm': 'Rhythmus-Analyse',
+        // Production section headers
+        'prod.label': '02 — Der LORN-Sound',
+        'prod.title': 'Equipment, Signalkette & Philosophie',
+        'prod.synth': 'Synthesizer-Stack',
+        'prod.signal': 'Signalkette',
+        'prod.saturation': 'Saettigung & Faerbung',
+        'prod.dynamics': 'Dynamik & Monitoring',
+        // Techniques section
+        'tech.label': '03 — Produktionstechniken',
+        'tech.title': 'Was den Sound einzigartig macht',
+        'tech.tape': 'Tape-Manipulation',
+        // Summary section
+        'summary.label': '04 — Erfolgskriterien',
+        'summary.title': 'Was der Track braucht',
+        'summary.box': 'Referenz-Tracks',
+        'summary.copy': 'Kriterien kopieren'
+    },
+    en: {
+        // Fullscreen overlay
+        'fullscreen.title': 'Fullscreen Required',
+        'fullscreen.text': 'This page must be viewed<br>in fullscreen mode.<br><br>Recommended: Full HD Display (1920x1080)',
+        'fullscreen.subtext': 'Press F11 to continue',
+        // Nav
+        'nav.production': 'Production',
+        'nav.brief': 'Brief',
+        // Audio player
+        'player.click': 'Click to play',
+        'player.playing': 'Playing...',
+        'player.paused': 'Paused',
+        'player.ended': 'Ended - play again',
+        'player.loading': 'Loading...',
+        // Section titles
+        'section.sound': 'Sound Description',
+        'section.production': 'Production Technique (Direct from LORN)',
+        'section.mood': 'Mood & Usage',
+        'section.sounddesign': 'Sound Design in Detail',
+        'section.elements': 'Sound Design Elements',
+        'section.rhythm': 'Rhythm Analysis',
+        // Production section headers
+        'prod.label': '02 — The LORN Sound',
+        'prod.title': 'Equipment, Signal Chain & Philosophy',
+        'prod.synth': 'Synthesizer Stack',
+        'prod.signal': 'Signal Chain',
+        'prod.saturation': 'Saturation & Coloring',
+        'prod.dynamics': 'Dynamics & Monitoring',
+        // Techniques section
+        'tech.label': '03 — Production Techniques',
+        'tech.title': 'What makes the sound unique',
+        'tech.tape': 'Tape Manipulation',
+        // Summary section
+        'summary.label': '04 — Success Criteria',
+        'summary.title': 'What the track needs',
+        'summary.box': 'Reference Tracks',
+        'summary.copy': 'Copy Criteria'
+    }
+};
+
+// Annotations in both languages
+const annotationTranslations = {
+    de: {
+        'evgoa2uVcuE': [
+            [10, "Verwobene Synthesizer-Arpeggio\nTraumartige Qualitaet"],
+            [22, "Perkussiver, mechanischer Bass setzt ein"],
+            [35, "Industrieller Kolbenmotor-Rhythmus"],
+            [55, "Time-Stretching Textur\nZaehfluessig wie Nebel"]
+        ],
+        'CqaAs_3azSs': [
+            [10, "Mysterioese, schwebende Melodielinie"],
+            [25, "Langsame Steigerung Spannungsaufbau"],
+            [43, "Definierter Beat mit Uhrmacher-Praezision"]
+        ],
+        'ZcM4wn_CD3U': [
+            [22, "Maschineller, pulsierender Beat"],
+            [35, "Praezise wie ein Schweizer Uhrwerk"],
+            [50, "Punchy, direkter Bass"]
+        ],
+        'mFa3rUm6wtY': [
+            [10, "Leicht bedrohlich aber unique"],
+            [26, "Schleppender, mahlender Beat"],
+            [50, "Spannung durch Entfernen von Elementen"],
+            [61, "Growlender Bass mit Kompression"],
+            [95, "Track mutiert / progressiv"]
+        ]
+    },
+    en: {
+        'evgoa2uVcuE': [
+            [10, "Interwoven Synthesizer Arpeggio\nDreamlike Quality"],
+            [22, "Percussive, mechanical bass enters"],
+            [35, "Industrial piston-engine rhythm"],
+            [55, "Time-stretching texture\nViscous like fog"]
+        ],
+        'CqaAs_3azSs': [
+            [10, "Mysterious, floating melody line"],
+            [25, "Slow build-up, tension rising"],
+            [43, "Defined beat with watchmaker precision"]
+        ],
+        'ZcM4wn_CD3U': [
+            [22, "Mechanical, pulsating beat"],
+            [35, "Precise like a Swiss clockwork"],
+            [50, "Punchy, direct bass"]
+        ],
+        'mFa3rUm6wtY': [
+            [10, "Slightly threatening but unique"],
+            [26, "Dragging, grinding beat"],
+            [50, "Tension through removing elements"],
+            [61, "Growling bass with compression"],
+            [95, "Track mutates / progressive"]
+        ]
+    }
+};
+
+function setLanguage(lang) {
+    currentLang = lang;
+
+    // Update toggle buttons
+    document.getElementById('lang-de').classList.toggle('active', lang === 'de');
+    document.getElementById('lang-en').classList.toggle('active', lang === 'en');
+
+    // Update all elements with data-i18n attribute
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (translations[lang][key]) {
+            el.innerHTML = translations[lang][key];
+        }
+    });
+
+    // Update audio status texts (only non-playing ones)
+    document.querySelectorAll('.audio-status:not(.playing)').forEach(el => {
+        if (el.textContent.includes('Klicken') || el.textContent.includes('Click')) {
+            el.textContent = translations[lang]['player.click'];
+        }
+    });
+
+    // Store preference
+    localStorage.setItem('preferredLang', lang);
+}
+
+// Load saved language preference
+document.addEventListener('DOMContentLoaded', () => {
+    const savedLang = localStorage.getItem('preferredLang');
+    if (savedLang && savedLang !== currentLang) {
+        setLanguage(savedLang);
+    }
+});
 
 // BPM for each track (for beat sync)
 const trackBPM = {
@@ -1941,7 +2151,9 @@ const annotationController = {
         if (player.getPlayerState && player.getPlayerState() !== 1) return;  // Not playing
 
         const currentTime = player.getCurrentTime ? player.getCurrentTime() : 0;
-        const annotations = trackAnnotations[this.currentVideoId] || [];
+        // Use language-aware annotations
+        const langAnnotations = annotationTranslations[currentLang] || annotationTranslations['de'];
+        const annotations = langAnnotations[this.currentVideoId] || [];
 
         // Find which annotation should be showing
         let targetIndex = -1;
