@@ -382,18 +382,22 @@ class OperatorFaceBeat extends HTMLElement {
             }
         };
 
+        // Reusable vectors — avoid per-frame allocation / GC pressure.
+        const _vL = new THREE.Vector3();
+        const _vR = new THREE.Vector3();
+
         const animateEyes = (t, dt) => {
             if (!leftEye || !rightEye || !headGroup) return;
             const verts = headGroup.userData.eyeVerts;
-            const headMeshForVerts = occlusionMesh; // both share the same geo + transform via parent
+            const headMeshForVerts = occlusionMesh;
             const pos = headMeshForVerts.geometry.attributes.position;
             if (verts && pos) {
-                const leftLocal = new THREE.Vector3(pos.getX(verts.left), pos.getY(verts.left), pos.getZ(verts.left));
-                const rightLocal = new THREE.Vector3(pos.getX(verts.right), pos.getY(verts.right), pos.getZ(verts.right));
-                headMeshForVerts.localToWorld(leftLocal);
-                headMeshForVerts.localToWorld(rightLocal);
-                leftEye.position.copy(leftLocal);
-                rightEye.position.copy(rightLocal);
+                _vL.set(pos.getX(verts.left), pos.getY(verts.left), pos.getZ(verts.left));
+                _vR.set(pos.getX(verts.right), pos.getY(verts.right), pos.getZ(verts.right));
+                headMeshForVerts.localToWorld(_vL);
+                headMeshForVerts.localToWorld(_vR);
+                leftEye.position.copy(_vL);
+                rightEye.position.copy(_vR);
                 leftEye.rotation.copy(headGroup.rotation);
                 rightEye.rotation.copy(headGroup.rotation);
             }
@@ -489,47 +493,34 @@ class OperatorFaceBeat extends HTMLElement {
             const idleZ = baseCameraPos.z + camState.dollyOffset;
             const idleLook = lookTarget;
 
-            // Cinematic blend
+            // Cinematic blend (no allocations — write directly to camera)
             if (camState.cineActive) {
                 const elapsed = Date.now() - camState.cineStart;
                 const progress = elapsed / camState.cineDuration;
                 let blend;
-                if (progress < 1 / 6) {
-                    // Ease in (1 beat)
-                    blend = ease(progress * 6);
-                } else if (progress < 4 / 6) {
-                    // Hold (3 beats)
-                    blend = 1.0;
-                } else if (progress < 1) {
-                    // Ease out (2 beats)
-                    blend = ease(1 - (progress - 4 / 6) * 3);
-                } else {
-                    blend = 0;
-                    camState.cineActive = false;
-                }
+                if (progress < 1 / 6) blend = ease(progress * 6);
+                else if (progress < 4 / 6) blend = 1.0;
+                else if (progress < 1) blend = ease(1 - (progress - 4 / 6) * 3);
+                else { blend = 0; camState.cineActive = false; }
 
-                const cinePos = new THREE.Vector3(
-                    baseCameraPos.x + camState.cinePos.x,
-                    baseCameraPos.y + camState.cinePos.y,
-                    baseCameraPos.z + camState.cinePos.z
-                );
-                const cineLook = new THREE.Vector3(
-                    lookTarget.x + camState.cineLook.x,
-                    lookTarget.y + camState.cineLook.y,
-                    lookTarget.z + camState.cineLook.z
-                );
+                const cpx = baseCameraPos.x + camState.cinePos.x;
+                const cpy = baseCameraPos.y + camState.cinePos.y;
+                const cpz = baseCameraPos.z + camState.cinePos.z;
+                const clx = lookTarget.x + camState.cineLook.x;
+                const cly = lookTarget.y + camState.cineLook.y;
+                const clz = lookTarget.z + camState.cineLook.z;
+                const inv = 1 - blend;
 
                 camera.position.set(
-                    idleX * (1 - blend) + cinePos.x * blend,
-                    idleY * (1 - blend) + cinePos.y * blend,
-                    idleZ * (1 - blend) + cinePos.z * blend
+                    idleX * inv + cpx * blend,
+                    idleY * inv + cpy * blend,
+                    idleZ * inv + cpz * blend
                 );
-                const lookNow = new THREE.Vector3(
-                    idleLook.x * (1 - blend) + cineLook.x * blend,
-                    idleLook.y * (1 - blend) + cineLook.y * blend,
-                    idleLook.z * (1 - blend) + cineLook.z * blend
+                camera.lookAt(
+                    idleLook.x * inv + clx * blend,
+                    idleLook.y * inv + cly * blend,
+                    idleLook.z * inv + clz * blend
                 );
-                camera.lookAt(lookNow);
             } else {
                 camera.position.set(idleX, idleY, idleZ);
                 camera.lookAt(idleLook);

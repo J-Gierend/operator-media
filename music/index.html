@@ -1925,47 +1925,39 @@ function initAudioAnalyser(trackId) {
 function startVisualization() {
     if (animationFrameId) cancelAnimationFrame(animationFrameId);
 
-    function analyze() {
+    // 30 Hz throttle — visual effects don't need full rAF; halves CPU + DOM writes.
+    const FRAME_MS = 33;
+    let lastAnalyze = 0;
+
+    function analyze(now) {
         if (!analyser || !currentlyPlaying) {
             animationFrameId = null;
             return;
         }
+        animationFrameId = requestAnimationFrame(analyze);
+
+        if (now - lastAnalyze < FRAME_MS) return;
+        lastAnalyze = now;
 
         analyser.getByteFrequencyData(frequencyData);
 
-        // Split frequency data into bands
-        // frequencyBins is adjustable (1-8), each bin ~172Hz with 256 fftSize
-        // 1 = 0-172Hz (sub-bass only), 3 = 0-516Hz (bass+punch), 8 = 0-1376Hz
-        const bassEnd = frequencyBins;  // Use adjustable frequency bins
-        const midEnd = Math.floor(frequencyData.length * 0.5);   // 10-50% = mids
+        // Split frequency data into bands. Each bin ~172Hz with 256 fftSize.
+        const bassEnd = frequencyBins;
+        const midEnd = (frequencyData.length * 0.5) | 0;
 
-        // Calculate average levels for each band
-        let bassLevel = 0;
-        let midLevel = 0;
-        let highLevel = 0;
+        let bassLevel = 0, midLevel = 0, highLevel = 0;
+        for (let i = 0; i < bassEnd; i++) bassLevel += frequencyData[i];
+        for (let i = bassEnd; i < midEnd; i++) midLevel += frequencyData[i];
+        for (let i = midEnd; i < frequencyData.length; i++) highLevel += frequencyData[i];
 
-        for (let i = 0; i < bassEnd; i++) {
-            bassLevel += frequencyData[i];
-        }
-        bassLevel = bassLevel / bassEnd / 255;  // Normalize to 0-1
-
-        for (let i = bassEnd; i < midEnd; i++) {
-            midLevel += frequencyData[i];
-        }
+        bassLevel = bassLevel / bassEnd / 255;
         midLevel = midLevel / (midEnd - bassEnd) / 255;
-
-        for (let i = midEnd; i < frequencyData.length; i++) {
-            highLevel += frequencyData[i];
-        }
         highLevel = highLevel / (frequencyData.length - midEnd) / 255;
 
-        // Apply audio-reactive effects
         applyAudioEffects(bassLevel, midLevel, highLevel);
-
-        animationFrameId = requestAnimationFrame(analyze);
     }
 
-    analyze();
+    requestAnimationFrame(analyze);
 }
 
 function stopVisualization() {
@@ -1994,62 +1986,50 @@ function loadTrackPunchSettings(trackId) {
     frequencyBins = config.freqBins;
 }
 
-function applyAudioEffects(bass, mid, high) {
-    const operatorEl = document.getElementById('operator-bg');
-    if (!operatorEl || !operatorEl.classList.contains('active')) return;
+// Cached references / state — populated lazily on first applyAudioEffects call
+// to avoid repeated DOM lookups inside the per-frame audio loop.
+let _opBgEl = null;
+let _lastFilterStr = '';
 
-    // Get per-track thresholds (fall back to defaults if track not found)
+function applyAudioEffects(bass, mid, high) {
+    if (!_opBgEl) _opBgEl = document.getElementById('operator-bg');
+    if (!_opBgEl || !_opBgEl.classList.contains('active')) return;
+
     const trackId = currentlyPlaying || operatorBg?.currentVideoId;
     const config = trackPunchConfig[trackId] || { velocityThreshold: 0.12, levelThreshold: 0.35, sensitivity: 1.0, freqBins: 3 };
 
-    // Apply sensitivity multiplier (higher = less sensitive, lower = more sensitive)
     const adjustedVelocityThreshold = config.velocityThreshold * sensitivityMultiplier;
     const adjustedLevelThreshold = config.levelThreshold * sensitivityMultiplier;
 
-    // Velocity-based detection with per-track tuning + manual sensitivity
     const bassVelocity = bass - lastBass;
     const isPunch = bassVelocity > adjustedVelocityThreshold && bass > adjustedLevelThreshold;
 
-    // Cooldown: real punches are 180ms+ apart
     const now = performance.now();
     const canPunch = (now - lastPunchTime) > 180;
 
-    // Update on punch detection
     if (isPunch && canPunch) {
-        // Intensity based on how strong the punch is relative to threshold
         const velocityStrength = (bassVelocity - config.velocityThreshold) / config.velocityThreshold;
         const levelStrength = (bass - config.levelThreshold) / config.levelThreshold;
         const punchIntensity = Math.min(1, (velocityStrength + levelStrength) * 0.6);
         distortionDecay = Math.max(distortionDecay, punchIntensity);
         lastPunchTime = now;
     } else {
-        distortionDecay *= 0.92;  // Smooth decay
+        distortionDecay *= 0.92;
     }
-
     lastBass = bass;
 
-    // Dark base, flash bright on punch - NO shaking, stable image
-    const baseBrightness = 0.35;
-    const punchBrightness = baseBrightness + (distortionDecay * 0.65);  // 0.35 -> 1.0 on punch
+    const punchBrightness = 0.35 + (distortionDecay * 0.65);
+    const punchGlow = 0.15 + (distortionDecay * 0.5);
+    const contrast = 1 + distortionDecay * 0.2;
+    const glowRadius = 10 + distortionDecay * 30;
 
-    // Glow: subtle at base, stronger on punch
-    const baseGlow = 0.15;
-    const punchGlow = baseGlow + (distortionDecay * 0.5);
-
-    // Keep transform stable (centered, no jitter)
-    operatorEl.style.transform = 'translate(-50%, -50%)';
-
-    // Apply filter: dark base, flash bright on punch
-    operatorEl.style.filter = `
-        brightness(${punchBrightness})
-        contrast(${1 + distortionDecay * 0.2})
-        drop-shadow(0 0 ${10 + distortionDecay * 30}px rgba(0, 255, 0, ${punchGlow}))
-    `;
-
-    // If operator-face component exists, send it the audio data
-    const operatorFace = operatorEl.querySelector('operator-face');
-    if (operatorFace && operatorFace.setAudioLevels) {
-        operatorFace.setAudioLevels(bass, mid, high);
+    // Single-template filter string; only write when it actually changed (
+    // avoids style invalidation thrash when distortionDecay is near zero
+    // for long stretches between punches).
+    const filterStr = `brightness(${punchBrightness.toFixed(3)}) contrast(${contrast.toFixed(3)}) drop-shadow(0 0 ${glowRadius.toFixed(1)}px rgba(0,255,0,${punchGlow.toFixed(3)}))`;
+    if (filterStr !== _lastFilterStr) {
+        _opBgEl.style.filter = filterStr;
+        _lastFilterStr = filterStr;
     }
 }
 
@@ -2280,6 +2260,7 @@ const annotationController = {
     start(videoId) {
         this.currentVideoId = videoId;
         this.currentIndex = -1;
+        this._pausedFor = 0; // reset safety-net accumulator on (re)start
         this.hide();
         if (this.revealTimeout) clearTimeout(this.revealTimeout);
 
@@ -2463,11 +2444,19 @@ function onAudioPlay(trackId) {
         trackCard.classList.add('text-hidden');
         const navHeight = 60;
         const targetTop = trackCard.getBoundingClientRect().top + window.scrollY - navHeight;
-        // Flag to prevent scroll listener from triggering skipAnimation
+        // Flag to prevent scroll listener from triggering skipAnimation.
+        // Use scrollend when available (fires when smooth-scroll truly finishes);
+        // fall back to a generous timeout — 1s was too short under heavier scenes.
         window.isProgrammaticScroll = true;
         window.scrollTo({ top: targetTop, behavior: 'smooth' });
-        // Clear flag after scroll completes
-        setTimeout(() => { window.isProgrammaticScroll = false; }, 1000);
+        const clearFlag = () => { window.isProgrammaticScroll = false; };
+        if ('onscrollend' in window) {
+            window.addEventListener('scrollend', clearFlag, { once: true });
+            // Backup in case scrollend doesn't fire (target already in view, etc.)
+            setTimeout(clearFlag, 2500);
+        } else {
+            setTimeout(clearFlag, 2500);
+        }
     }
 
     // Start Ghost Operator animation
