@@ -869,7 +869,7 @@
             overflow: hidden;
         }
 
-        /* LAYER 1: Black overlay - darkens background */
+        /* LAYER 1: Backdrop — Matrix rain on solid black, fades in with the play sequence */
         #black-overlay {
             position: fixed;
             top: 0;
@@ -885,6 +885,11 @@
 
         #black-overlay.active {
             opacity: 1;
+        }
+
+        #black-overlay matrix-rain {
+            position: absolute;
+            inset: 0;
         }
 
         /* LAYER 2: Operator Face - above black overlay */
@@ -1134,12 +1139,14 @@
     </script>
 </head>
 <body>
-    <!-- Black overlay for animation -->
-    <div id="black-overlay"></div>
+    <!-- Backdrop overlay for animation: solid black + matrix rain canvas -->
+    <div id="black-overlay">
+        <matrix-rain></matrix-rain>
+    </div>
 
-    <!-- Operator Face Background -->
+    <!-- Operator Face Background — beat-synced cinematic camera -->
     <div id="operator-bg">
-        <operator-face width="100%" height="100%"></operator-face>
+        <operator-face-beat width="100%" height="100%"></operator-face-beat>
     </div>
 
     <!-- Music Annotations Overlay -->
@@ -2066,6 +2073,7 @@ const translations = {
         'player.paused': 'Pausiert',
         'player.ended': 'Beendet - erneut abspielen',
         'player.loading': 'Laden...',
+        'player.error': 'Wiedergabe fehlgeschlagen — erneut klicken',
         // Section titles
         'section.sound': 'Klangliche Beschreibung',
         'section.production': 'Produktionstechnik (Direkt von LORN)',
@@ -2104,6 +2112,7 @@ const translations = {
         'player.paused': 'Paused',
         'player.ended': 'Ended - play again',
         'player.loading': 'Loading...',
+        'player.error': 'Playback failed — click again',
         // Section titles
         'section.sound': 'Sound Description',
         'section.production': 'Production Technique (Direct from LORN)',
@@ -2297,7 +2306,20 @@ const annotationController = {
         if (!this.currentVideoId || !players[this.currentVideoId]) return;
 
         const audio = players[this.currentVideoId];
-        if (audio.paused) return;  // Not playing
+
+        // Safety net: if the audio stays paused while we're "in a play sequence",
+        // assume something went wrong (codec failure, autoplay block, stuck load)
+        // and auto-recover instead of leaving the UI locked forever.
+        if (audio.paused) {
+            this._pausedFor = (this._pausedFor || 0) + 500;
+            if (this._pausedFor > 8000 && operatorBg.isAnimating) {
+                console.warn('[annotation] Audio stuck paused for', this._pausedFor, 'ms — auto-unlocking');
+                operatorBg.skipAnimation();
+                this.stop();
+            }
+            return;
+        }
+        this._pausedFor = 0;
 
         const currentTime = audio.currentTime || 0;
         // Use language-aware annotations
@@ -2617,9 +2639,25 @@ function togglePlay(trackId, button) {
         if (playPromise !== undefined) {
             playPromise.catch(error => {
                 console.warn('Audio play failed:', error);
-                // Still trigger UI update even if autoplay blocked
-                // This handles test environments and autoplay restrictions
-                onAudioPlay(trackId);
+                // Bug fix: previously this called onAudioPlay() which locked the
+                // UI animation sequence even though audio never started — leaving
+                // the page frozen with no unlock path. Now we reset state cleanly.
+                // Test environments can opt into the UI-only flow via window.testMode.
+                if (window.testMode) {
+                    onAudioPlay(trackId);
+                    return;
+                }
+                currentlyPlaying = null;
+                button.classList.remove('playing', 'loading');
+                const playerDiv = document.querySelector(`[data-track-id="${trackId}"]`);
+                const status = playerDiv?.querySelector('.audio-status');
+                if (status) {
+                    status.textContent = (translations[currentLang] || translations.de)['player.error']
+                        || 'Wiedergabe fehlgeschlagen — bitte erneut klicken';
+                    status.classList.remove('playing');
+                }
+                // Make sure nothing is locked.
+                unlockControls();
             });
         }
     }
@@ -2927,7 +2965,8 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 
 <!-- Operator Face Component -->
-<script type="module" src="operator-face.js"></script>
+<script type="module" src="matrix-rain.js"></script>
+<script type="module" src="operator-face-beat.js"></script>
 
 </body>
 </html>
