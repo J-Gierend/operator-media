@@ -146,8 +146,11 @@ class OperatorFaceBeat extends HTMLElement {
         // Transparent — matrix-rain renders behind us via the page DOM stack.
         // (Setting scene.background here would force an opaque clear and hide it.)
 
+        // Pulled back to a comfortable portrait framing — head + a bit of negative
+        // space, not crammed into frame. Cinematic moments push closer or wider
+        // around this base so the default state is calm.
         const camera = new THREE.PerspectiveCamera(40, this.width / this.height, 0.1, 1000);
-        const baseCameraPos = new THREE.Vector3(0, 0.5, 16);
+        const baseCameraPos = new THREE.Vector3(0, 0.5, 24);
         const lookTarget = new THREE.Vector3(0, 0.5, 0);
         camera.position.copy(baseCameraPos);
         camera.lookAt(lookTarget);
@@ -206,7 +209,8 @@ class OperatorFaceBeat extends HTMLElement {
 
         const eyeState = {
             blinkTimer: 0,
-            nextBlink: 3000 + Math.random() * 4000,
+            // Slower blink cadence — 5–12 seconds between blinks (was 3–7)
+            nextBlink: 5000 + Math.random() * 7000,
             isBlinking: false,
             blinkPhase: 0,
             blinkDir: 'close'
@@ -214,30 +218,29 @@ class OperatorFaceBeat extends HTMLElement {
 
         // Camera state — orbit + dolly + cinematic
         const camState = {
-            // Continuous orbit
             orbitTheta: 0,
             orbitPhi: 0,
-            // Smoothed dolly target — eased toward in animate loop
-            dollyOffset: 0,        // current
-            dollyTarget: 0,        // where we're heading
-            // Cinematic moment
+            dollyOffset: 0,
+            dollyTarget: 0,
             cineActive: false,
-            cineStart: 0,          // ms timestamp
-            cineDuration: 0,       // total ms (in + hold + out)
-            cinePos: new THREE.Vector3(),       // target camera offset from base
-            cineLook: new THREE.Vector3(),      // target lookAt offset
-            cineNextBeat: 16 + Math.random() * 12, // next cine event in beats since play-start
-            // Per-instance phase so multiple faces don't sync if more are added
-            phaseOffset: Math.random() * Math.PI * 2
+            cineStart: 0,
+            cineDuration: 0,
+            cinePos: new THREE.Vector3(),
+            cineLook: new THREE.Vector3(),
+            // First cinematic ~24-44 beats in (longer settle period at start)
+            cineNextBeat: 24 + Math.random() * 20,
+            phaseOffset: Math.random() * Math.PI * 2,
+            lastPreset: null
         };
 
         const headMove = {
             phaseX: Math.random() * Math.PI * 2,
             phaseY: Math.random() * Math.PI * 2,
-            speedX: 0.00015,
-            speedY: 0.00012,
-            rangeX: 0.08,
-            rangeY: 0.12
+            // Slower drift, smaller range — calmer overall idle
+            speedX: 0.00009,
+            speedY: 0.00007,
+            rangeX: 0.05,
+            rangeY: 0.07
         };
 
         const createEye = () => {
@@ -347,36 +350,51 @@ class OperatorFaceBeat extends HTMLElement {
                 if (eyeState.blinkPhase >= 1) {
                     eyeState.isBlinking = false;
                     eyeState.blinkTimer = 0;
-                    eyeState.nextBlink = 3000 + Math.random() * 4000;
+                    eyeState.nextBlink = 5000 + Math.random() * 7000;
                     return 1.0;
                 }
                 return eyeState.blinkPhase;
             }
         };
 
-        const updateBeatVisuals = (t) => {
+        // Smoothed pulse — exponential ease so the visual response doesn't strobe
+        // on every beat. We track a sustained "energy" value and let it decay
+        // gently, which reads as a gentle living-glow rather than a hard flash.
+        let smoothedPulse = 0;
+
+        const updateBeatVisuals = (t, dt) => {
             if (!this._lineMat) return;
             const beat = window.operatorBeat;
             const pulse = beat.getPulse();
             const env = beat.getEnvelope();
             const isPlaying = beat.isPlaying;
 
-            const baseOpacity = 0.32;
-            const baseBloom = 0.35;
+            // Half-life ~250ms → reaches a beat's peak softly, decays slowly
+            const easeIn = 1 - Math.exp(-dt / 90);
+            const easeOut = 1 - Math.exp(-dt / 240);
+            if (pulse > smoothedPulse) {
+                smoothedPulse += (pulse - smoothedPulse) * easeIn;
+            } else {
+                smoothedPulse += (pulse - smoothedPulse) * easeOut;
+            }
+
+            const baseOpacity = 0.34;
+            const baseBloom = 0.32;
 
             if (isPlaying) {
-                // Wireframe lights up on beat; envelope keeps it elevated mid-beat
-                this._lineMat.opacity = baseOpacity + pulse * 0.45 + env * 0.08;
-                bloomPass.strength = baseBloom + pulse * 0.85 + env * 0.15;
+                // Much gentler swings than before — the page is for reading too
+                this._lineMat.opacity = baseOpacity + smoothedPulse * 0.18 + env * 0.04;
+                bloomPass.strength = baseBloom + smoothedPulse * 0.30 + env * 0.06;
 
                 eyeMeshes.forEach(eye => {
                     const pupil = eye.getObjectByName('pupil');
                     const outerGlow = eye.getObjectByName('outerGlow');
-                    if (pupil) pupil.material.opacity = 1.0 + pulse * 0.5;
-                    if (outerGlow) outerGlow.material.opacity = 0.2 + pulse * 0.35 + env * 0.1;
+                    if (pupil) pupil.material.opacity = 1.0 + smoothedPulse * 0.18;
+                    if (outerGlow) outerGlow.material.opacity = 0.2 + smoothedPulse * 0.15 + env * 0.05;
                 });
             } else {
-                const wave = Math.sin(t * 0.002) * 0.05;
+                // Slow ambient breathing while idle
+                const wave = Math.sin(t * 0.0012) * 0.04;
                 this._lineMat.opacity = baseOpacity + wave;
                 bloomPass.strength = baseBloom + wave;
             }
@@ -404,21 +422,22 @@ class OperatorFaceBeat extends HTMLElement {
             const blink = updateBlink(dt);
             leftEye.scale.y = rightEye.scale.y = blink;
 
-            const pulse = window.operatorBeat.getPulse();
-            const baseScale = 0.95 + Math.sin(t * 0.002) * 0.05;
-            leftEye.scale.x = rightEye.scale.x = baseScale + pulse * 0.1;
+            // Subtler eye-x pulse than before (was 0.1)
+            const baseScale = 0.96 + Math.sin(t * 0.0014) * 0.03;
+            leftEye.scale.x = rightEye.scale.x = baseScale + smoothedPulse * 0.04;
         };
 
         const animateHead = (t) => {
             if (!headGroup) return;
             const beat = window.operatorBeat;
-            const pulse = beat.getPulse();
 
+            // Slow breathe + a small smoothed beat scale (no per-beat punch)
             const breathe = Math.sin(t * 0.0003) * 0.002;
-            const beatScale = beat.isPlaying ? pulse * 0.01 : 0;
+            const beatScale = beat.isPlaying ? smoothedPulse * 0.004 : 0;
             headGroup.scale.setScalar(1.8 * (1 + breathe + beatScale));
 
-            const moveMult = beat.isPlaying ? 1.5 : 1.0;
+            // Only slightly more active when playing (was 1.5×)
+            const moveMult = beat.isPlaying ? 1.15 : 1.0;
             const rotX = Math.sin(t * headMove.speedX + headMove.phaseX) * headMove.rangeX * moveMult;
             const rotY = Math.sin(t * headMove.speedY + headMove.phaseY) * headMove.rangeY * moveMult;
 
@@ -426,35 +445,48 @@ class OperatorFaceBeat extends HTMLElement {
             headGroup.rotation.y = rotY;
         };
 
-        // ---- Camera: orbit + beat dolly + cinematic ----
-        // Cinematic moment presets: each is an offset from base camera position
-        // and lookAt point. We pick one randomly when triggered.
+        // ---- Camera: orbit + smoothed dolly + cinematic ----
+        // Presets are OFFSETS from base camera position (which is now portrait
+        // distance, z=24). Mix of pull-backs (positive z), modest pushes, and
+        // wide off-axis framings — variance over intensity, calm over flashy.
+        // 'beats' = total length of the moment; longer = more cinematic.
         const CINE_PRESETS = [
-            // Tight closeup, slightly off-axis
-            { pos: new THREE.Vector3(1.2, 0.4, -3.5), look: new THREE.Vector3(0, 0.3, 0) },
-            // Low angle, looking up
-            { pos: new THREE.Vector3(0, -1.2, -2.5), look: new THREE.Vector3(0, 1.0, 0) },
-            // Profile-ish from the side
-            { pos: new THREE.Vector3(2.5, 0.2, -1.0), look: new THREE.Vector3(-0.3, 0.5, 0) },
-            // High angle looking down
-            { pos: new THREE.Vector3(0, 1.6, -2.0), look: new THREE.Vector3(0, -0.2, 0) },
-            // Direct push-in (head-on)
-            { pos: new THREE.Vector3(0, 0, -4.5), look: new THREE.Vector3(0, 0.5, 0) },
-            // Slight Dutch angle from upper right
-            { pos: new THREE.Vector3(-1.5, 1.0, -3.0), look: new THREE.Vector3(0.2, 0.4, 0) }
+            // Wide pull-back — portrait/3-quarter shot, lots of negative space
+            { pos: new THREE.Vector3(0, 0.3, 8), look: new THREE.Vector3(0, 0.4, 0), beats: 12 },
+            // Slow off-axis drift, slightly wider
+            { pos: new THREE.Vector3(3.5, 0.5, 5), look: new THREE.Vector3(-0.2, 0.4, 0), beats: 12 },
+            // High pull-back, like a slow reveal
+            { pos: new THREE.Vector3(0, 3.0, 6), look: new THREE.Vector3(0, -0.1, 0), beats: 14 },
+            // Profile from the side — head turned silhouette
+            { pos: new THREE.Vector3(6.0, 0.2, 3), look: new THREE.Vector3(-0.5, 0.4, 0), beats: 12 },
+            // Modest portrait closeup (was the tight one — pulled back for breathing room)
+            { pos: new THREE.Vector3(0.8, 0.3, -2.5), look: new THREE.Vector3(0, 0.4, 0), beats: 10 },
+            // Low angle looking up, mid distance
+            { pos: new THREE.Vector3(0, -1.5, 1.5), look: new THREE.Vector3(0, 1.2, 0), beats: 10 },
+            // Subtle dutch angle from upper-left, wider
+            { pos: new THREE.Vector3(-2.5, 1.5, 4), look: new THREE.Vector3(0.2, 0.3, 0), beats: 12 },
+            // Slow wide drift (slightly off-axis, far)
+            { pos: new THREE.Vector3(2.0, 1.0, 9), look: new THREE.Vector3(-0.2, 0.4, 0), beats: 14 }
         ];
 
         // easeInOutCubic
         const ease = (x) => x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
 
         const triggerCinematic = () => {
-            const preset = CINE_PRESETS[Math.floor(Math.random() * CINE_PRESETS.length)];
+            // Avoid repeating the same preset twice in a row
+            let preset;
+            do {
+                preset = CINE_PRESETS[Math.floor(Math.random() * CINE_PRESETS.length)];
+            } while (preset === camState.lastPreset && CINE_PRESETS.length > 1);
+            camState.lastPreset = preset;
+
             camState.cinePos.copy(preset.pos);
             camState.cineLook.copy(preset.look);
-            // Length tied to BPM: ~6 beats total (1 in, 3 hold, 2 out)
             const beat = window.operatorBeat;
             const msPerBeat = 60000 / beat.bpm;
-            camState.cineDuration = msPerBeat * 6;
+            // Per-preset length (was fixed at 6 beats for everything).
+            // Longer holds + slower transitions read as cinematic, not jittery.
+            camState.cineDuration = msPerBeat * (preset.beats || 10);
             camState.cineStart = Date.now();
             camState.cineActive = true;
         };
@@ -462,45 +494,47 @@ class OperatorFaceBeat extends HTMLElement {
         const animateCamera = (t, dt) => {
             const beat = window.operatorBeat;
             const isPlaying = beat.isPlaying;
-            const pulse = beat.getPulse();
             const env = beat.getEnvelope();
 
-            // Schedule next cinematic moment based on beat count
+            // Schedule next cinematic — wider gaps now (24–48 beats between
+            // events), so the camera mostly drifts at the calm base position
+            // and only occasionally cuts to a different framing.
             if (isPlaying && !camState.cineActive) {
                 if (beat.getBeatCount() >= camState.cineNextBeat) {
                     triggerCinematic();
-                    // Next cine: 16-32 beats from the END of this one
-                    camState.cineNextBeat = beat.getBeatCount() + 6 + 16 + Math.random() * 16;
+                    const presetBeats = camState.cineDuration / (60000 / beat.bpm);
+                    camState.cineNextBeat = beat.getBeatCount() + presetBeats + 24 + Math.random() * 24;
                 }
             }
 
-            // Beat-driven dolly target (zoom in on each beat)
-            // When playing: pulse pushes camera ~0.6 units closer; envelope adds gentle sustained pull
-            const targetDolly = isPlaying ? -(pulse * 0.6 + env * 0.2) : 0;
-            // Smooth toward target — exponential ease
-            const dollyEase = 1 - Math.exp(-dt / 80);
+            // Smoothed dolly — drives off ENVELOPE (sustained energy) rather
+            // than per-beat pulse, so the camera doesn't jerk every beat.
+            // Magnitude is tiny: at most 0.5 units of travel.
+            const targetDolly = isPlaying ? -env * 0.5 : 0;
+            const dollyEase = 1 - Math.exp(-dt / 350);
             camState.dollyOffset += (targetDolly - camState.dollyOffset) * dollyEase;
 
-            // Slow continuous orbit — livelier when playing
-            const orbitSpeed = isPlaying ? 0.00012 : 0.00004;
+            // Slower continuous orbit (was 0.00012 / 0.00004) — almost imperceptible
+            const orbitSpeed = isPlaying ? 0.00006 : 0.00003;
             camState.orbitTheta += dt * orbitSpeed;
-            const orbitX = Math.sin(camState.orbitTheta + camState.phaseOffset) * (isPlaying ? 1.6 : 0.6);
-            const orbitY = Math.sin(camState.orbitTheta * 0.7 + camState.phaseOffset * 1.3) * (isPlaying ? 0.6 : 0.25);
+            const orbitX = Math.sin(camState.orbitTheta + camState.phaseOffset) * (isPlaying ? 1.0 : 0.5);
+            const orbitY = Math.sin(camState.orbitTheta * 0.7 + camState.phaseOffset * 1.3) * (isPlaying ? 0.35 : 0.18);
 
-            // Build base camera position (orbit + dolly)
             const idleX = baseCameraPos.x + orbitX;
             const idleY = baseCameraPos.y + orbitY;
             const idleZ = baseCameraPos.z + camState.dollyOffset;
             const idleLook = lookTarget;
 
-            // Cinematic blend (no allocations — write directly to camera)
+            // Cinematic blend (no allocations — write directly to camera).
+            // Phases: 25% ease in, 50% hold, 25% ease out — long enough to
+            // feel intentional, no abrupt cuts.
             if (camState.cineActive) {
                 const elapsed = Date.now() - camState.cineStart;
                 const progress = elapsed / camState.cineDuration;
                 let blend;
-                if (progress < 1 / 6) blend = ease(progress * 6);
-                else if (progress < 4 / 6) blend = 1.0;
-                else if (progress < 1) blend = ease(1 - (progress - 4 / 6) * 3);
+                if (progress < 0.25) blend = ease(progress * 4);
+                else if (progress < 0.75) blend = 1.0;
+                else if (progress < 1) blend = ease(1 - (progress - 0.75) * 4);
                 else { blend = 0; camState.cineActive = false; }
 
                 const cpx = baseCameraPos.x + camState.cinePos.x;
@@ -537,7 +571,7 @@ class OperatorFaceBeat extends HTMLElement {
             if (headGroup) {
                 animateEyes(now, dt);
                 animateHead(now);
-                updateBeatVisuals(now);
+                updateBeatVisuals(now, dt);
                 animateCamera(now, dt);
             }
             composer.render();

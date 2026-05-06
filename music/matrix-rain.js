@@ -147,27 +147,27 @@ class MatrixRain extends HTMLElement {
 
         const beat = window.operatorBeat;
         const playing = beat?.isPlaying ?? false;
-        const pulse = beat?.getPulse?.() ?? 0;
         const env = beat?.getEnvelope?.() ?? 0;
 
         // Trail: translucent black overlay each frame fades old glyphs out.
-        // Lower alpha = longer trails (more "Matrix"). Boost when playing for energy.
-        const trailAlpha = playing ? 0.06 : 0.10;
+        // Higher alpha = shorter trail. Subtle increase when playing.
+        const trailAlpha = playing ? 0.08 : 0.10;
         ctx.fillStyle = `rgba(0,0,0,${trailAlpha})`;
         ctx.fillRect(0, 0, w, h);
 
         ctx.font = `${this.fontSize}px Consolas, "Lucida Console", monospace`;
 
-        // Color: bright leading glyph (white-green), trailing glyphs in classic green.
-        // Beat envelope brightens the whole field slightly.
+        // Steadier colors — driven by smooth envelope only, no per-beat pulse
+        // strobing. Reads as ambient atmosphere, not a flashing dance floor.
         const headGreen = playing
-            ? `rgba(180, 255, 180, ${0.95 + pulse * 0.05})`
-            : 'rgba(120, 220, 120, 0.85)';
+            ? `rgba(170, 250, 170, 0.92)`
+            : 'rgba(120, 220, 120, 0.80)';
         const bodyGreen = playing
-            ? `rgba(0, ${Math.min(255, 200 + Math.floor(env * 55))}, 65, 0.9)`
-            : 'rgba(0, 180, 65, 0.7)';
+            ? `rgba(0, ${Math.min(220, 180 + Math.floor(env * 30))}, 60, 0.85)`
+            : 'rgba(0, 170, 60, 0.65)';
 
-        const speedMult = playing ? (1.0 + env * 0.5 + pulse * 0.6) : 0.6;
+        // Gentler speed boost — was up to 2.1×, now max ~1.25×
+        const speedMult = playing ? (1.0 + env * 0.25) : 0.55;
 
         for (let i = 0; i < this.drops.length; i++) {
             const x = i * this.fontSize;
