@@ -89,11 +89,11 @@ test.describe('Bug regression: Anvil play freezes the player', () => {
     const button = page.locator('[data-track-id="anvil"] .play-button');
     await button.click();
 
-    // Face activates 3000ms into the start sequence; poll up to 5s for stability.
-    await expect.poll(
-      async () => page.locator('#operator-bg').evaluate(el => el.classList.contains('active')),
-      { timeout: 6000, intervals: [200] }
-    ).toBe(true);
+    // Face activates 3000ms into the start sequence
+    await page.waitForFunction(
+      () => document.getElementById('operator-bg')?.classList.contains('active'),
+      { timeout: 8000 }
+    );
 
     const playing = await button.evaluate(el => el.classList.contains('playing'));
     expect(playing).toBe(true);

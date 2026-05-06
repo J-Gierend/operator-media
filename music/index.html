@@ -887,10 +887,6 @@
             opacity: 1;
         }
 
-        #black-overlay matrix-rain {
-            position: absolute;
-            inset: 0;
-        }
 
         /* LAYER 2: Operator Face - above black overlay */
         #operator-bg {
@@ -1139,10 +1135,9 @@
     </script>
 </head>
 <body>
-    <!-- Backdrop overlay for animation: solid black + matrix rain canvas -->
-    <div id="black-overlay">
-        <matrix-rain></matrix-rain>
-    </div>
+    <!-- Backdrop overlay for animation: solid black; rain is rendered IN the
+         3D scene by <operator-face-beat>, no longer a separate 2D layer. -->
+    <div id="black-overlay"></div>
 
     <!-- Operator Face Background — beat-synced cinematic camera -->
     <div id="operator-bg">
@@ -2959,7 +2954,6 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 
 <!-- Operator Face Component -->
-<script type="module" src="matrix-rain.js"></script>
 <script type="module" src="operator-face-beat.js"></script>
 
 </body>
