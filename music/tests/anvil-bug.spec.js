@@ -60,29 +60,21 @@ test.describe('Bug regression: Anvil play freezes the player', () => {
     console.log('[PASS] Failed play does not lock the page');
   });
 
-  test('safety net: stuck-paused audio auto-unlocks within 10s', async ({ page }) => {
-    // Different failure mode: play() resolves but audio never advances (stuck buffering).
-    // The safety net in annotationController.checkTime() must auto-skipAnimation.
+  test('safety net: stuck-paused-but-ready audio auto-unlocks', async ({ page }) => {
+    // Different failure mode: play() resolves but audio never advances even
+    // though it's fully buffered (readyState >= 3). Safety net must recover.
     await page.evaluate((id) => {
       const audio = document.getElementById('player-' + id);
-      // Make play() succeed but audio stays paused
-      const origPlay = audio.play.bind(audio);
-      audio.play = () => {
-        // Don't actually start; resolve so .catch is not triggered
-        return Promise.resolve();
-      };
-      // Force paused getter to return true
-      Object.defineProperty(audio, 'paused', {
-        get: () => true,
-        configurable: true
-      });
+      audio.play = () => Promise.resolve();
+      Object.defineProperty(audio, 'paused', { get: () => true, configurable: true });
+      Object.defineProperty(audio, 'readyState', { get: () => 4, configurable: true });
     }, 'anvil');
 
     const button = page.locator('[data-track-id="anvil"] .play-button');
     await button.click();
 
-    // Safety net fires after 8s of stuck-paused.
-    await page.waitForTimeout(9500);
+    // Safety net fires after >12s of stuck-paused while readyState>=3.
+    await page.waitForTimeout(13500);
 
     const locked = await page.evaluate(() =>
       document.documentElement.classList.contains('animation-locked') ||
